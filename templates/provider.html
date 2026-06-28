@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Provider Profile — NeedBro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12);--radius:14px}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1)}
+    nav{background:var(--white);border-bottom:1px solid var(--gray-2);padding:0 5%;display:flex;align-items:center;gap:16px;height:60px;position:sticky;top:0;z-index:50}
+    .back-btn{display:flex;align-items:center;gap:6px;color:var(--gray-5);text-decoration:none;font-size:.88rem;font-weight:500}
+    .back-btn:hover{color:var(--blue)}
+    .nav-logo{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;color:var(--blue);text-decoration:none;margin-left:auto}
+    .nav-logo span{color:var(--amber)}
+    /* Hero */
+    .hero{background:linear-gradient(135deg,var(--navy),#112244);padding:40px 5%}
+    .hero-inner{max-width:960px;margin:0 auto;display:flex;gap:28px;align-items:flex-start}
+    .provider-photo{width:100px;height:100px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;border:4px solid rgba(255,255,255,.2)}
+    .hero-info{flex:1}
+    .hero-name{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);margin-bottom:4px}
+    .hero-role{color:#A8BDD8;font-size:.95rem;margin-bottom:12px}
+    .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .badge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
+    .badge-verified{background:rgba(18,183,106,.2);color:#6EE7B7;border:1px solid rgba(18,183,106,.3)}
+    .badge-online{background:rgba(26,107,255,.2);color:#93C5FD;border:1px solid rgba(26,107,255,.3)}
+    .badge-exp{background:rgba(255,140,0,.15);color:#FCD34D;border:1px solid rgba(255,140,0,.3)}
+    .hero-stats{display:flex;gap:28px}
+    .h-stat{text-align:center}
+    .h-stat-val{font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white)}
+    .h-stat-label{font-size:.72rem;color:#7A9CC4;margin-top:2px}
+    .hero-actions{display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+    .btn{padding:11px 22px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:'Sora',sans-serif}
+    .btn-primary{background:var(--blue);color:var(--white)}
+    .btn-primary:hover{background:#0D4FCC}
+    .btn-ghost{background:rgba(255,255,255,.1);color:var(--white);border:1.5px solid rgba(255,255,255,.2)}
+    .btn-ghost:hover{background:rgba(255,255,255,.2)}
+    /* Content */
+    .content{max-width:960px;margin:0 auto;padding:28px 20px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+    .card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+    .card-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    /* Skills */
+    .skills-grid{display:flex;gap:8px;flex-wrap:wrap}
+    .skill-chip{background:var(--sky);color:var(--blue);padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px}
+    /* Availability */
+    .avail-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .day-card{background:var(--gray-1);border:1.5px solid var(--gray-2);border-radius:8px;padding:8px 4px;text-align:center}
+    .day-card.available{background:var(--sky);border-color:var(--blue)}
+    .day-name{font-size:.7rem;font-weight:700;color:var(--gray-5);margin-bottom:4px}
+    .day-card.available .day-name{color:var(--blue)}
+    .day-time{font-size:.65rem;color:var(--gray-5)}
+    /* Reviews */
+    .rating-summary{display:flex;gap:24px;align-items:center;margin-bottom:20px}
+    .rating-big{text-align:center}
+    .rating-num{font-family:'Sora',sans-serif;font-size:3rem;font-weight:800;color:var(--gray-9)}
+    .stars-big{font-size:1.3rem;color:var(--amber)}
+    .rating-count{font-size:.78rem;color:var(--gray-5);margin-top:2px}
+    .rating-bars{flex:1}
+    .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .bar-label{font-size:.78rem;color:var(--gray-5);width:16px;text-align:right}
+    .bar-track{flex:1;height:8px;background:var(--gray-2);border-radius:4px;overflow:hidden}
+    .bar-fill{height:100%;background:var(--amber);border-radius:4px}
+    .bar-count{font-size:.75rem;color:var(--gray-5);width:24px}
+    .review-list{display:flex;flex-direction:column;gap:14px}
+    .review-item{padding:16px;background:var(--gray-1);border-radius:10px;border:1px solid var(--gray-2)}
+    .review-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .reviewer-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700}
+    .reviewer-name{font-weight:600;font-size:.88rem}
+    .review-date{font-size:.75rem;color:var(--gray-5);margin-top:2px}
+    .review-stars{color:var(--amber);font-size:.85rem;margin-bottom:6px}
+    .review-text{font-size:.85rem;color:var(--gray-5);line-height:1.6}
+    /* Sidebar booking */
+    .book-card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:var(--radius);padding:24px;position:sticky;top:80px}
+    .price-display{text-align:center;padding:16px 0;border-bottom:1px solid var(--gray-2);margin-bottom:20px}
+    .price-main{font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:var(--blue)}
+    .price-unit{font-size:.82rem;color:var(--gray-5);margin-top:2px}
+    .book-features{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+    .book-feature{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--gray-5)}
+    .book-feature span:first-child{font-size:1.1rem}
+    .book-btn-main{width:100%;padding:14px;background:var(--blue);color:var(--white);border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:10px}
+    .book-btn-main:hover{background:#0D4FCC;transform:translateY(-1px)}
+    .fav-btn{width:100%;padding:11px;border:1.5px solid var(--gray-2);background:var(--white);border-radius:10px;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--gray-5)}
+    .fav-btn:hover{border-color:var(--red);color:var(--red)}
+    .fav-btn.active{border-color:var(--red);color:var(--red);background:#FFF5F5}
+    .chat-btn{width:100%;padding:11px;border:1.5px solid var(--blue);background:var(--sky);border-radius:10px;font-size:.88rem;font-weight:600;cursor:pointer;color:var(--blue);margin-top:8px}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .gallery-img{aspect-ratio:1;background:var(--gray-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden}
+    .loading-spinner{text-align:center;padding:60px;color:var(--gray-5)}
+    @media(max-width:700px){.content{grid-template-columns:1fr}.book-card{position:static}.hero-inner{flex-direction:column}.hero-actions{flex-direction:row}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="back-btn" href="search.html">← Back to Search</a>
+  <a class="nav-logo" href="index.html">Need<span>Bro</span></a>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="provider-photo" id="providerPhoto">👨‍🔧</div>
+    <div class="hero-info">
+      <div class="hero-name" id="providerName">Loading…</div>
+      <div class="hero-role" id="providerRole">—</div>
+      <div class="hero-badges" id="heroBadges"></div>
+      <div class="hero-stats">
+        <div class="h-stat"><div class="h-stat-val" id="heroRating">—</div><div class="h-stat-label">Rating</div></div>
+        <div class="h-stat"><div class="h-stat-val" id="heroJobs">—</div><div class="h-stat-label">Jobs Done</div></div>
+        <div class="h-stat"><div class="h-stat-val" id="heroExp">—</div><div class="h-stat-label">Years Exp.</div></div>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="bookNow()">Book Now</button>
+      <button class="btn btn-ghost" onclick="toggleFav()" id="favBtnHero">♡ Save</button>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:960px;margin:0 auto;padding:0 20px" id="mainContent">
+  <div class="content" id="contentGrid">
+    <div class="loading-spinner">⏳ Loading provider details…</div>
+  </div>
+</div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('token');
+const providerId = new URLSearchParams(location.search).get('id') || 1;
+let isFav = false;
+let providerData = null;
+
+async function loadProvider() {
+  try {
+    const res = await fetch(API + `/api/providers/${providerId}`);
+    if (!res.ok) throw new Error();
+    providerData = await res.json();
+    renderProvider(providerData);
+  } catch {
+    // Sample data
+    providerData = {
+      id: 1, name: 'Raj Kumar', role: 'Electrician',
+      experience_years: 8, bio: 'Expert electrician with 8+ years in residential and commercial wiring, panel upgrades, fan installations, and emergency repairs. Certified by CPWD. Quick, clean, and reliable.',
+      shop_address: 'Dharampeth, Nagpur, Maharashtra',
+      is_verified: true, availability_status: 'online',
+      avg_rating: 4.9, total_jobs: 312,
+      skills: [{category:'Electrical',hourly_rate:299},{category:'Fan Repair',hourly_rate:199},{category:'CCTV Installation',hourly_rate:499}],
+      recent_reviews: [
+        {rating:5,comment:'Fixed all wiring issues within 2 hours. Very professional!',created_at:'2024-05-10T10:00:00',user_name:'Priya S.'},
+        {rating:5,comment:'Arrived on time, explained everything. Highly recommend!',created_at:'2024-05-08T14:00:00',user_name:'Aakash V.'},
+        {rating:4,comment:'Good work, just took a bit longer than expected.',created_at:'2024-05-01T16:00:00',user_name:'Rahul M.'},
+      ]
+    };
+    renderProvider(providerData);
+  }
+}
+
+function renderProvider(p) {
+  document.getElementById('providerName').textContent = p.name;
+  document.getElementById('providerRole').textContent = p.skills?.[0]?.category || 'Professional';
+  document.getElementById('heroRating').textContent = p.avg_rating + '★';
+  document.getElementById('heroJobs').textContent = p.total_jobs;
+  document.getElementById('heroExp').textContent = p.experience_years;
+
+  const badges = document.getElementById('heroBadges');
+  if (p.is_verified) badges.innerHTML += `<span class="badge badge-verified">✓ Verified</span>`;
+  if (p.availability_status === 'online') badges.innerHTML += `<span class="badge badge-online">🟢 Online Now</span>`;
+  badges.innerHTML += `<span class="badge badge-exp">🏆 ${p.experience_years} yrs exp</span>`;
+
+  // Render main content
+  const grid = document.getElementById('contentGrid');
+  grid.innerHTML = `
+    <!-- Left Column -->
+    <div>
+      <!-- About -->
+      <div class="card">
+        <div class="card-title">👤 About</div>
+        <p style="font-size:.9rem;color:var(--gray-5);line-height:1.8">${p.bio || 'Experienced professional committed to quality work.'}</p>
+        ${p.shop_address ? `<div style="margin-top:12px;display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--gray-5)"><span>📍</span><span>${p.shop_address}</span></div>` : ''}
+      </div>
+
+      <!-- Skills -->
+      <div class="card">
+        <div class="card-title">🛠️ Services Offered</div>
+        <div class="skills-grid">
+          ${(p.skills||[]).map(s=>`<div class="skill-chip">✓ ${s.category} <span style="opacity:.6;font-size:.7rem">₹${s.hourly_rate}/visit</span></div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Availability -->
+      <div class="card">
+        <div class="card-title">📅 Weekly Availability</div>
+        <div class="avail-grid">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`
+            <div class="day-card ${d!=='Sun'?'available':''}">
+              <div class="day-name">${d}</div>
+              <div class="day-time">${d!=='Sun'?'8AM–7PM':'Off'}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Work Gallery -->
+      <div class="card">
+        <div class="card-title">📸 Work Gallery</div>
+        <div class="gallery">
+          <div class="gallery-img">🔌</div>
+          <div class="gallery-img">⚡</div>
+          <div class="gallery-img">🔧</div>
+          <div class="gallery-img">🛠️</div>
+          <div class="gallery-img">💡</div>
+          <div class="gallery-img">🏠</div>
+        </div>
+        <p style="font-size:.75rem;color:var(--gray-5);margin-top:10px;text-align:center">Before/after photos from recent jobs</p>
+      </div>
+
+      <!-- Reviews -->
+      <div class="card">
+        <div class="card-title">⭐ Reviews (${p.recent_reviews?.length || 0})</div>
+        <div class="rating-summary">
+          <div class="rating-big">
+            <div class="rating-num">${p.avg_rating}</div>
+            <div class="stars-big">★★★★★</div>
+            <div class="rating-count">${p.total_jobs} reviews</div>
+          </div>
+          <div class="rating-bars">
+            ${[5,4,3,2,1].map(n=>`
+              <div class="bar-row">
+                <span class="bar-label">${n}</span>
+                <div class="bar-track"><div class="bar-fill" style="width:${n===5?80:n===4?12:n===3?5:2}%"></div></div>
+                <span class="bar-count">${n===5?'80%':n===4?'12%':n===3?'5%':'3%'}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="review-list">
+          ${(p.recent_reviews||[]).map(r=>`
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-avatar">${(r.user_name||'U')[0]}</div>
+                <div>
+                  <div class="reviewer-name">${r.user_name || 'Customer'}</div>
+                  <div class="review-date">${new Date(r.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+                </div>
+                <div style="margin-left:auto;font-size:.9rem;color:var(--amber)">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+              </div>
+              <div class="review-text">${r.comment}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Booking Card -->
+    <div>
+      <div class="book-card">
+        <div class="price-display">
+          <div class="price-main">₹${p.skills?.[0]?.hourly_rate || 299}</div>
+          <div class="price-unit">per visit · All-inclusive</div>
+        </div>
+        <div class="book-features">
+          <div class="book-feature"><span>✓</span><span>Background verified professional</span></div>
+          <div class="book-feature"><span>✓</span><span>Pay only after service is done</span></div>
+          <div class="book-feature"><span>✓</span><span>Free re-visit if issue persists</span></div>
+          <div class="book-feature"><span>✓</span><span>Real-time GPS tracking</span></div>
+          <div class="book-feature"><span>✓</span><span>Insured upto ₹10,000</span></div>
+        </div>
+        <button class="book-btn-main" onclick="bookNow()">📅 Book Appointment</button>
+        <button class="fav-btn" id="favBtn" onclick="toggleFav()">♡ Add to Favorites</button>
+        <button class="chat-btn" onclick="openChat()">💬 Send a Message</button>
+
+        <div style="margin-top:16px;padding:12px;background:var(--sky);border-radius:8px;font-size:.78rem;color:var(--blue);text-align:center">
+          <strong>🟢 ${p.availability_status === 'online' ? 'Available Now' : 'Currently ' + p.availability_status}</strong><br/>
+          Typically responds within 10 minutes
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function bookNow() {
+  if (!token) { location.href = 'index.html'; return; }
+  location.href = `booking.html?provider_id=${providerId}`;
+}
+
+async function toggleFav() {
+  if (!token) { location.href = 'index.html'; return; }
+  try {
+    await fetch(API + `/api/favorites/${providerId}`, {
+      method:'POST',
+      headers:{'Authorization':`Bearer ${token}`}
+    });
+  } catch {}
+  isFav = !isFav;
+  const btns = [document.getElementById('favBtn'), document.getElementById('favBtnHero')];
+  btns.forEach(b => {
+    if (!b) return;
+    b.textContent = isFav ? '❤️ Saved' : '♡ Save';
+    b.classList.toggle('active', isFav);
+  });
+}
+
+function openChat() {
+  if (!token) { location.href = 'index.html'; return; }
+  location.href = `chat.html?provider=${providerId}`;
+}
+
+loadProvider();
+</script>
+</body>
+</html>

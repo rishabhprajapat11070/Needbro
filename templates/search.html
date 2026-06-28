@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search Services — NeedBro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12);--radius:14px}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);min-height:100vh}
+    /* Nav */
+    nav{background:var(--white);border-bottom:1px solid var(--gray-2);padding:0 5%;display:flex;align-items:center;gap:20px;height:60px;position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--blue);text-decoration:none}
+    .nav-logo span{color:var(--amber)}
+    .search-bar{flex:1;max-width:520px;display:flex;align-items:center;gap:8px;background:var(--gray-1);border:1.5px solid var(--gray-2);border-radius:10px;padding:7px 14px}
+    .search-bar input{flex:1;border:none;background:transparent;font-size:.9rem;outline:none;font-family:'Inter',sans-serif}
+    .btn{padding:8px 18px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+    .btn-primary{background:var(--blue);color:var(--white)}
+    .btn-primary:hover{background:#0D4FCC}
+    .btn-outline{background:transparent;border:1.5px solid var(--gray-2);color:var(--gray-9)}
+    .btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+    /* Layout */
+    .layout{display:flex;gap:0;min-height:calc(100vh - 60px)}
+    /* Filters sidebar */
+    .filters{width:260px;background:var(--white);border-right:1px solid var(--gray-2);padding:24px;flex-shrink:0}
+    .filter-title{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:20px}
+    .filter-group{margin-bottom:24px}
+    .filter-label{font-size:.78rem;font-weight:700;color:var(--gray-5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+    .filter-group select,.filter-group input[type=range],.filter-group input[type=number]{width:100%;padding:8px 10px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:.85rem;font-family:'Inter',sans-serif;outline:none}
+    .filter-group select:focus{border-color:var(--blue)}
+    .check-group{display:flex;flex-direction:column;gap:8px}
+    .check-item{display:flex;align-items:center;gap:8px;font-size:.85rem;cursor:pointer}
+    .check-item input{width:16px;height:16px;accent-color:var(--blue)}
+    .range-val{font-size:.8rem;color:var(--blue);font-weight:600;margin-top:6px}
+    .apply-btn{width:100%;padding:10px;background:var(--blue);color:var(--white);border:none;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s}
+    .apply-btn:hover{background:#0D4FCC}
+    .reset-btn{width:100%;padding:8px;background:transparent;color:var(--gray-5);border:1.5px solid var(--gray-2);border-radius:10px;font-size:.85rem;cursor:pointer;margin-top:8px}
+    /* Results */
+    .results{flex:1;padding:24px}
+    .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .results-count{font-size:.9rem;color:var(--gray-5)}
+    .results-count strong{color:var(--gray-9)}
+    .sort-select{padding:7px 12px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:.85rem;font-family:'Inter',sans-serif;outline:none;background:var(--white)}
+    /* Provider Cards */
+    .providers-list{display:flex;flex-direction:column;gap:14px}
+    .provider-card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:var(--radius);padding:20px;display:flex;gap:18px;align-items:flex-start;transition:all .2s;cursor:pointer}
+    .provider-card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateY(-1px)}
+    .provider-avatar{width:64px;height:64px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+    .provider-info{flex:1}
+    .provider-name{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:3px}
+    .provider-role{font-size:.82rem;color:var(--gray-5);margin-bottom:8px}
+    .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+    .badge{padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700}
+    .badge-verified{background:#D1FAE5;color:#065F46}
+    .badge-online{background:#DBEAFE;color:#1D4ED8}
+    .badge-emergency{background:#FEE2E2;color:#991B1B}
+    .provider-stats{display:flex;gap:20px;flex-wrap:wrap}
+    .stat-item{font-size:.8rem;color:var(--gray-5)}
+    .stat-item strong{color:var(--gray-9);display:block;font-size:.9rem}
+    .provider-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+    .price-main{font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;color:var(--blue)}
+    .price-unit{font-size:.75rem;color:var(--gray-5)}
+    .rating-row{display:flex;align-items:center;gap:5px}
+    .stars{color:var(--amber)}
+    .book-btn{padding:9px 20px;background:var(--blue);color:var(--white);border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
+    .book-btn:hover{background:#0D4FCC}
+    /* Loading / Empty */
+    .loading{text-align:center;padding:60px;color:var(--gray-5)}
+    .loading .spinner{width:40px;height:40px;border:3px solid var(--gray-2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .empty{text-align:center;padding:60px}
+    .empty .icon{font-size:3.5rem;margin-bottom:16px}
+    .empty h3{font-family:'Sora',sans-serif;margin-bottom:8px}
+    .empty p{color:var(--gray-5);font-size:.9rem}
+    /* Category chips */
+    .cat-chips{display:flex;gap:8px;flex-wrap:wrap;padding:12px 24px;background:var(--white);border-bottom:1px solid var(--gray-2)}
+    .cat-chip{padding:5px 14px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-2);background:var(--white);color:var(--gray-5);transition:all .2s}
+    .cat-chip.active,.cat-chip:hover{border-color:var(--blue);background:var(--sky);color:var(--blue)}
+    @media(max-width:700px){.filters{display:none}.provider-card{flex-direction:column}.provider-right{flex-direction:row;align-items:center;width:100%}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Need<span>Bro</span></a>
+  <div class="search-bar">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="Electrician, Plumber, AC Repair…" />
+  </div>
+  <button class="btn btn-primary" onclick="doSearch()">Search</button>
+  <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
+</nav>
+
+<!-- Category Chips -->
+<div class="cat-chips" id="catChips"></div>
+
+<div class="layout">
+  <!-- Filters -->
+  <aside class="filters">
+    <div class="filter-title">🎛️ Filters</div>
+
+    <div class="filter-group">
+      <div class="filter-label">Sort by</div>
+      <select id="sortBy">
+        <option value="rating">Top Rated</option>
+        <option value="distance">Nearest First</option>
+        <option value="price">Lowest Price</option>
+        <option value="jobs">Most Experienced</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-label">Min Rating</div>
+      <input type="range" id="minRating" min="0" max="5" step="0.5" value="0" oninput="document.getElementById('ratingVal').textContent=this.value+'★'" />
+      <div class="range-val" id="ratingVal">0★</div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-label">Max Distance</div>
+      <input type="range" id="maxDist" min="1" max="50" value="20" oninput="document.getElementById('distVal').textContent=this.value+' km'" />
+      <div class="range-val" id="distVal">20 km</div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-label">Options</div>
+      <div class="check-group">
+        <label class="check-item"><input type="checkbox" id="verifiedOnly" /> Verified only</label>
+        <label class="check-item"><input type="checkbox" id="availableNow" /> Available now</label>
+        <label class="check-item"><input type="checkbox" id="emergencyOnly" /> Emergency service</label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-label">Max Price (₹/visit)</div>
+      <input type="number" id="maxPrice" placeholder="e.g. 500" min="0" />
+    </div>
+
+    <button class="apply-btn" onclick="applyFilters()">Apply Filters</button>
+    <button class="reset-btn" onclick="resetFilters()">Reset</button>
+  </aside>
+
+  <!-- Results -->
+  <section class="results">
+    <div class="results-header">
+      <div class="results-count" id="resultsCount">Searching…</div>
+    </div>
+    <div class="providers-list" id="providersList">
+      <div class="loading"><div class="spinner"></div><p>Finding professionals near you…</p></div>
+    </div>
+    <div style="text-align:center;margin-top:24px" id="loadMoreBtn" style="display:none">
+      <button class="btn btn-outline" onclick="loadMore()">Load more results</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('token');
+const params = new URLSearchParams(location.search);
+let currentPage = 1;
+let currentQuery = params.get('q') || '';
+let activeCat = params.get('cat') || null;
+let allResults = [];
+
+// Category chips
+const CATS = ['Electrical','Plumber','AC Repair','Fan Repair','Washing Machine','Car Mechanic','Bike Mechanic','Computer Repair','Laptop Repair','Painter','Carpenter','Home Cleaning','RO Service','CCTV','Gardener','Cook','Tutor','Packers & Movers'];
+const chipsEl = document.getElementById('catChips');
+CATS.forEach(c => {
+  const chip = document.createElement('span');
+  chip.className = 'cat-chip' + (c === activeCat ? ' active' : '');
+  chip.textContent = c;
+  chip.onclick = () => {
+    activeCat = activeCat === c ? null : c;
+    document.querySelectorAll('.cat-chip').forEach(ch => ch.classList.remove('active'));
+    if (activeCat) chip.classList.add('active');
+    search();
+  };
+  chipsEl.appendChild(chip);
+});
+
+document.getElementById('searchInput').value = currentQuery;
+
+async function search() {
+  document.getElementById('providersList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Finding professionals…</p></div>';
+  document.getElementById('resultsCount').textContent = 'Searching…';
+
+  const q = document.getElementById('searchInput').value.trim() || activeCat || currentQuery;
+  const minRating  = document.getElementById('minRating').value;
+  const maxDist    = document.getElementById('maxDist').value;
+  const verified   = document.getElementById('verifiedOnly').checked;
+  const available  = document.getElementById('availableNow').checked;
+  const sortBy     = document.getElementById('sortBy').value;
+
+  let url = `/api/search?sort_by=${sortBy}&page=1&limit=20`;
+  if (q)          url += `&query=${encodeURIComponent(q)}`;
+  if (minRating > 0) url += `&min_rating=${minRating}`;
+  if (maxDist < 50)  url += `&max_distance_km=${maxDist}`;
+  if (verified)   url += `&verified_only=true`;
+  if (available)  url += `&available_today=true`;
+
+  try {
+    const res = await fetch(API + url, token ? {headers:{'Authorization':`Bearer ${token}`}} : {});
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    allResults = data.results || [];
+    renderResults(allResults, data.total);
+  } catch {
+    // Show sample data if API not running
+    renderSample(q);
+  }
+}
+
+function renderResults(providers, total) {
+  document.getElementById('resultsCount').innerHTML = `<strong>${total}</strong> professionals found`;
+  if (providers.length === 0) {
+    document.getElementById('providersList').innerHTML = `
+      <div class="empty">
+        <div class="icon">🔍</div>
+        <h3>No results found</h3>
+        <p>Try a different search term or adjust your filters</p>
+      </div>`;
+    return;
+  }
+  document.getElementById('providersList').innerHTML = providers.map(p => providerCard(p)).join('');
+}
+
+function providerCard(p) {
+  const stars = '★'.repeat(Math.round(p.avg_rating||0)) + '☆'.repeat(5-Math.round(p.avg_rating||0));
+  return `
+    <div class="provider-card" onclick="location.href='provider.html?id=${p.id}'">
+      <div class="provider-avatar">${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '👨‍🔧'}</div>
+      <div class="provider-info">
+        <div class="provider-name">${p.name}</div>
+        <div class="provider-role">${p.role || 'Service Professional'}</div>
+        <div class="badges">
+          ${p.is_verified ? '<span class="badge badge-verified">✓ Verified</span>' : ''}
+          ${p.availability_status==='online' ? '<span class="badge badge-online">🟢 Online</span>' : ''}
+        </div>
+        <div class="provider-stats">
+          <div class="stat-item"><strong>${p.avg_rating || '—'}★</strong>Rating</div>
+          <div class="stat-item"><strong>${p.total_jobs||0}</strong>Jobs done</div>
+          ${p.distance_km ? `<div class="stat-item"><strong>${p.distance_km} km</strong>Away</div>` : ''}
+        </div>
+      </div>
+      <div class="provider-right">
+        <div>
+          <div class="price-main">₹299</div>
+          <div class="price-unit">per visit</div>
+        </div>
+        <button class="book-btn" onclick="event.stopPropagation();bookNow(${p.id})">Book Now</button>
+      </div>
+    </div>`;
+}
+
+function renderSample(q) {
+  const samples = [
+    {id:1,name:'Raj Kumar',role:'Electrician',avg_rating:4.9,total_jobs:312,distance_km:1.2,is_verified:true,availability_status:'online'},
+    {id:2,name:'Mohan Singh',role:'AC Technician',avg_rating:4.8,total_jobs:198,distance_km:2.4,is_verified:true,availability_status:'online'},
+    {id:3,name:'Sunita Devi',role:'Home Cleaner',avg_rating:4.7,total_jobs:421,distance_km:0.8,is_verified:true,availability_status:'offline'},
+    {id:4,name:'Aman Gupta',role:'Plumber',avg_rating:4.6,total_jobs:156,distance_km:3.1,is_verified:false,availability_status:'online'},
+    {id:5,name:'Vikram Rao',role:'Carpenter',avg_rating:4.5,total_jobs:89,distance_km:4.5,is_verified:true,availability_status:'busy'},
+  ].filter(p => !q || p.role.toLowerCase().includes(q.toLowerCase()) || p.name.toLowerCase().includes(q.toLowerCase()) || true);
+  document.getElementById('resultsCount').innerHTML = `<strong>${samples.length}</strong> professionals found`;
+  document.getElementById('providersList').innerHTML = samples.map(p => providerCard(p)).join('');
+}
+
+function bookNow(providerId) {
+  if (!token) { location.href = 'index.html'; return; }
+  location.href = `booking.html?provider_id=${providerId}`;
+}
+
+function doSearch() { currentQuery = document.getElementById('searchInput').value; search(); }
+function applyFilters() { search(); }
+function resetFilters() {
+  document.getElementById('minRating').value = 0;
+  document.getElementById('maxDist').value = 20;
+  document.getElementById('verifiedOnly').checked = false;
+  document.getElementById('availableNow').checked = false;
+  document.getElementById('maxPrice').value = '';
+  document.getElementById('ratingVal').textContent = '0★';
+  document.getElementById('distVal').textContent = '20 km';
+  search();
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+search();
+</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Provider Dashboard — NeedBro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12)}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);display:flex;min-height:100vh}
+    .sidebar{width:240px;background:var(--navy);min-height:100vh;padding:24px 16px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+    .sidebar-logo{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:8px;padding:0 8px}
+    .sidebar-logo span{color:var(--amber)}
+    .sidebar-role{font-size:.72rem;color:#4A6A9A;padding:0 8px;margin-bottom:28px}
+    .sidebar-nav{list-style:none;display:flex;flex-direction:column;gap:4px}
+    .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;text-decoration:none;color:#7A9CC4;font-size:.88rem;font-weight:500;transition:all .2s}
+    .sidebar-nav a:hover,.sidebar-nav .active a{background:rgba(26,107,255,.15);color:var(--white)}
+    .sidebar-nav .active a{background:var(--blue);color:var(--white)}
+    .sidebar-icon{font-size:1rem;width:20px;text-align:center}
+    .sidebar-bottom{margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)}
+    .main{flex:1;padding:28px;overflow-y:auto}
+    /* Availability toggle bar */
+    .avail-bar{background:var(--white);border:1.5px solid var(--gray-2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .avail-left h3{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700}
+    .avail-left p{font-size:.78rem;color:var(--gray-5);margin-top:2px}
+    .avail-status{display:flex;gap:8px}
+    .avail-btn{padding:7px 16px;border-radius:20px;font-size:.78rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .2s}
+    .avail-btn.online{background:#D1FAE5;color:#065F46;border-color:#6EE7B7}
+    .avail-btn.offline{background:var(--gray-1);color:var(--gray-5);border-color:var(--gray-2)}
+    .avail-btn.busy{background:#FEF3C7;color:#92400E;border-color:#FCD34D}
+    .avail-btn:not(.active){opacity:.5}
+    .avail-btn.active{opacity:1;transform:scale(1.05)}
+    /* Stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+    .stat-card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:12px;padding:18px}
+    .stat-card .icon{font-size:1.4rem;margin-bottom:8px}
+    .stat-card .label{font-size:.75rem;color:var(--gray-5);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .stat-card .value{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800}
+    .stat-card .change{font-size:.75rem;color:var(--green);margin-top:4px}
+    /* Earnings chart placeholder */
+    .card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:14px;padding:22px;margin-bottom:16px}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .card-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700}
+    .earnings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .earn-box{background:var(--gray-1);border-radius:10px;padding:14px;text-align:center}
+    .earn-box .e-label{font-size:.72rem;color:var(--gray-5);font-weight:600;text-transform:uppercase;margin-bottom:6px}
+    .earn-box .e-val{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--blue)}
+    /* Bookings */
+    .booking-list{display:flex;flex-direction:column;gap:12px}
+    .booking-item{background:var(--gray-1);border:1.5px solid var(--gray-2);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px}
+    .booking-item.new-booking{border-color:var(--blue);background:var(--sky)}
+    .booking-avatar{width:46px;height:46px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;font-family:'Sora',sans-serif;flex-shrink:0}
+    .booking-info{flex:1}
+    .booking-user{font-weight:700;font-size:.9rem}
+    .booking-service{font-size:.78rem;color:var(--gray-5);margin-top:2px}
+    .booking-meta{display:flex;gap:14px;margin-top:6px}
+    .booking-meta span{font-size:.75rem;color:var(--gray-5)}
+    .booking-amount{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;color:var(--green);margin-right:8px}
+    .booking-actions{display:flex;gap:6px}
+    .action-btn{padding:7px 14px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+    .accept-btn{background:var(--green);color:var(--white)}
+    .accept-btn:hover{background:#0D9A57}
+    .reject-btn{background:#FEE2E2;color:var(--red)}
+    .status-badge{padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
+    .s-pending{background:#FFF3CD;color:#856404}
+    .s-accepted{background:#DBEAFE;color:#1D4ED8}
+    .s-completed{background:#D1FAE5;color:#065F46}
+    .s-cancelled{background:#FEE2E2;color:#991B1B}
+    .s-coming{background:#E0E7FF;color:#3730A3}
+    .s-working{background:#FEF3C7;color:#92400E}
+    /* Wallet */
+    .wallet-card{background:linear-gradient(135deg,var(--blue),#0D4FCC);border-radius:14px;padding:24px;color:var(--white);margin-bottom:16px}
+    .wallet-label{font-size:.78rem;opacity:.75;margin-bottom:6px}
+    .wallet-bal{font-family:'Sora',sans-serif;font-size:2.2rem;font-weight:800;margin-bottom:16px}
+    .wallet-actions{display:flex;gap:10px}
+    .wallet-btn{padding:9px 18px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+    .wallet-btn-white{background:var(--white);color:var(--blue);border:none}
+    .wallet-btn-outline{background:transparent;color:var(--white);border:2px solid rgba(255,255,255,.4)}
+    .wallet-btn-outline:hover{background:rgba(255,255,255,.1)}
+    /* Profile mini */
+    .profile-mini{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.05);border-radius:10px;margin-bottom:16px}
+    .profile-avatar{width:44px;height:44px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:1.1rem;color:var(--white)}
+    .profile-name{font-weight:700;font-size:.9rem;color:var(--white)}
+    .profile-status{font-size:.72rem;color:#7A9CC4;margin-top:2px}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{background:var(--green)}
+    .toast.error{background:var(--red)}
+    .btn-sm{padding:7px 14px;border-radius:7px;font-size:.8rem;font-weight:700;cursor:pointer;border:none;background:var(--blue);color:var(--white);text-decoration:none}
+    select.status-sel{border:1.5px solid var(--gray-2);border-radius:6px;padding:5px 8px;font-size:.78rem;font-family:'Inter',sans-serif;outline:none}
+    @media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.sidebar{display:none}.main{padding:16px}}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Need<span>Bro</span></div>
+  <div class="sidebar-role">Provider Dashboard</div>
+  <div class="profile-mini">
+    <div class="profile-avatar" id="sidebarInitial">P</div>
+    <div>
+      <div class="profile-name" id="sidebarName">Loading…</div>
+      <div class="profile-status" id="sidebarStatus">—</div>
+    </div>
+  </div>
+  <ul class="sidebar-nav">
+    <li class="active"><a href="provider-dashboard.html"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
+    <li><a href="provider-bookings.html"><span class="sidebar-icon">📋</span>Bookings</a></li>
+    <li><a href="provider-earnings.html"><span class="sidebar-icon">💰</span>Earnings</a></li>
+    <li><a href="chat.html"><span class="sidebar-icon">💬</span>Messages</a></li>
+    <li><a href="provider-profile.html"><span class="sidebar-icon">👤</span>My Profile</a></li>
+    <li><a href="provider-documents.html"><span class="sidebar-icon">📄</span>Documents</a></li>
+    <div class="sidebar-bottom">
+      <li><a href="index.html" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
+    </div>
+  </ul>
+</aside>
+
+<main class="main">
+  <!-- Availability Bar -->
+  <div class="avail-bar">
+    <div class="avail-left">
+      <h3>Your Status</h3>
+      <p>Toggle to start/stop receiving bookings</p>
+    </div>
+    <div class="avail-status">
+      <button class="avail-btn online active" onclick="setStatus('online')">🟢 Online</button>
+      <button class="avail-btn busy" onclick="setStatus('busy')">🟡 Busy</button>
+      <button class="avail-btn offline" onclick="setStatus('offline')">⚫ Offline</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="icon">📋</div>
+      <div class="label">Today's Bookings</div>
+      <div class="value" id="todayBookings">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">⏳</div>
+      <div class="label">Pending</div>
+      <div class="value" id="pendingCount">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">✅</div>
+      <div class="label">Completed</div>
+      <div class="value" id="completedCount">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">⭐</div>
+      <div class="label">Avg Rating</div>
+      <div class="value" id="avgRating">—</div>
+    </div>
+  </div>
+
+  <!-- Earnings -->
+  <div class="wallet-card">
+    <div class="wallet-label">Wallet Balance</div>
+    <div class="wallet-bal" id="walletBal">₹—</div>
+    <div class="wallet-actions">
+      <button class="wallet-btn wallet-btn-white">💸 Withdraw</button>
+      <button class="wallet-btn wallet-btn-outline">📊 Earnings History</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💰 Earnings Summary</div>
+    </div>
+    <div class="earnings-grid">
+      <div class="earn-box"><div class="e-label">Today</div><div class="e-val" id="todayEarnings">₹—</div></div>
+      <div class="earn-box"><div class="e-label">This Week</div><div class="e-val" id="weekEarnings">₹—</div></div>
+      <div class="earn-box"><div class="e-label">This Month</div><div class="e-val" id="monthEarnings">₹—</div></div>
+    </div>
+  </div>
+
+  <!-- Pending Bookings -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🔔 New Booking Requests</div>
+      <a href="provider-bookings.html" class="btn-sm">View All</a>
+    </div>
+    <div class="booking-list" id="pendingBookings">
+      <div style="text-align:center;padding:24px;color:var(--gray-5)">⏳ Loading…</div>
+    </div>
+  </div>
+
+  <!-- Active/Upcoming -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📅 Today's Schedule</div>
+    </div>
+    <div class="booking-list" id="todaySchedule">
+      <div style="text-align:center;padding:24px;color:var(--gray-5)">📋 Loading schedule…</div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('provider_token');
+if (!token) location.href = 'provider-login.html';
+
+async function apiFetch(path, opts={}) {
+  return fetch(API + path, {
+    ...opts,
+    headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json',...(opts.headers||{})}
+  });
+}
+
+async function loadDashboard() {
+  try {
+    const res = await apiFetch('/api/provider/dashboard');
+    if (!res.ok) throw new Error();
+    const d = await res.json();
+
+    document.getElementById('sidebarName').textContent = d.name;
+    document.getElementById('sidebarInitial').textContent = d.name[0];
+    document.getElementById('sidebarStatus').textContent = d.availability_status;
+    document.getElementById('todayBookings').textContent = d.today_bookings;
+    document.getElementById('pendingCount').textContent = d.pending_bookings;
+    document.getElementById('completedCount').textContent = d.completed_bookings;
+    document.getElementById('avgRating').textContent = d.avg_rating + '★';
+    document.getElementById('walletBal').textContent = `₹${d.wallet_balance}`;
+
+    // Mark active status btn
+    setStatusUI(d.availability_status);
+  } catch {
+    // Sample data
+    document.getElementById('sidebarName').textContent = 'Raj Kumar';
+    document.getElementById('sidebarInitial').textContent = 'R';
+    document.getElementById('todayBookings').textContent = '4';
+    document.getElementById('pendingCount').textContent = '2';
+    document.getElementById('completedCount').textContent = '187';
+    document.getElementById('avgRating').textContent = '4.9★';
+    document.getElementById('walletBal').textContent = '₹3,240';
+  }
+}
+
+async function loadEarnings() {
+  try {
+    const res = await apiFetch('/api/provider/earnings');
+    if (!res.ok) throw new Error();
+    const d = await res.json();
+    document.getElementById('todayEarnings').textContent = `₹${d.today}`;
+    document.getElementById('weekEarnings').textContent = `₹${d.weekly}`;
+    document.getElementById('monthEarnings').textContent = `₹${d.monthly}`;
+  } catch {
+    document.getElementById('todayEarnings').textContent = '₹840';
+    document.getElementById('weekEarnings').textContent = '₹4,120';
+    document.getElementById('monthEarnings').textContent = '₹18,600';
+  }
+}
+
+async function loadBookings() {
+  try {
+    const res = await apiFetch('/api/provider/bookings?status=pending');
+    if (!res.ok) throw new Error();
+    const bookings = await res.json();
+    renderPending(bookings);
+  } catch {
+    renderPending([
+      {id:101,user_id:1,service_id:1,booking_date:'2024-06-27',booking_time:'10:00',address:'Dharampeth, Nagpur',final_amount:299,status:'pending',is_emergency:false,user_name:'Priya Sharma'},
+      {id:102,user_id:2,service_id:1,booking_date:'2024-06-27',booking_time:'14:00',address:'Sitabuldi, Nagpur',final_amount:499,status:'pending',is_emergency:true,user_name:'Aakash Verma'},
+    ]);
+  }
+
+  // Today's schedule
+  try {
+    const res = await apiFetch('/api/provider/bookings?status=accepted');
+    if (!res.ok) throw new Error();
+    const bookings = await res.json();
+    renderSchedule(bookings);
+  } catch {
+    renderSchedule([
+      {id:98,booking_date:'2024-06-27',booking_time:'09:00',address:'Ramdaspeth, Nagpur',final_amount:299,status:'coming',user_name:'Rahul Mehta'},
+      {id:99,booking_date:'2024-06-27',booking_time:'11:30',address:'Laxmi Nagar, Nagpur',final_amount:599,status:'working',user_name:'Neha Patil'},
+    ]);
+  }
+}
+
+function renderPending(bookings) {
+  const el = document.getElementById('pendingBookings');
+  if (!bookings.length) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--gray-5)">✅ No pending requests right now</div>';
+    return;
+  }
+  el.innerHTML = bookings.map(b => `
+    <div class="booking-item new-booking" id="booking-${b.id}">
+      <div class="booking-avatar">${(b.user_name||'U')[0]}</div>
+      <div class="booking-info">
+        <div class="booking-user">${b.user_name || 'Customer #' + b.user_id} ${b.is_emergency ? '<span style="background:#FEE2E2;color:#B91C1C;padding:2px 6px;border-radius:4px;font-size:.68rem;font-weight:700">🚨 EMERGENCY</span>' : ''}</div>
+        <div class="booking-service">Service #${b.service_id} · ${b.booking_time}</div>
+        <div class="booking-meta">
+          <span>📍 ${b.address}</span>
+          <span>📅 ${b.booking_date}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div class="booking-amount">₹${b.final_amount}</div>
+        <div class="booking-actions">
+          <button class="action-btn accept-btn" onclick="updateStatus(${b.id},'accepted')">✓ Accept</button>
+          <button class="action-btn reject-btn" onclick="updateStatus(${b.id},'rejected')">✗ Reject</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderSchedule(bookings) {
+  const el = document.getElementById('todaySchedule');
+  if (!bookings.length) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--gray-5)">📅 No more appointments today</div>';
+    return;
+  }
+  el.innerHTML = bookings.map(b => `
+    <div class="booking-item">
+      <div class="booking-avatar" style="background:var(--green)">${(b.user_name||'U')[0]}</div>
+      <div class="booking-info">
+        <div class="booking-user">${b.user_name || 'Customer'}</div>
+        <div class="booking-service">${b.booking_time} · ${b.address}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="booking-amount">₹${b.final_amount}</div>
+        <select class="status-sel" onchange="updateStatus(${b.id},this.value)">
+          <option ${b.status==='accepted'?'selected':''} value="accepted">Accepted</option>
+          <option ${b.status==='coming'?'selected':''} value="coming">On the way</option>
+          <option ${b.status==='reached'?'selected':''} value="reached">Reached</option>
+          <option ${b.status==='working'?'selected':''} value="working">Working</option>
+          <option ${b.status==='completed'?'selected':''} value="completed">Completed</option>
+        </select>
+      </div>
+    </div>`).join('');
+}
+
+async function updateStatus(bookingId, status) {
+  try {
+    const res = await apiFetch(`/api/provider/bookings/${bookingId}/status`, {
+      method:'PUT', body: JSON.stringify({status})
+    });
+    if (!res.ok) throw new Error();
+  } catch {}
+  showToast(status === 'accepted' ? '✓ Booking accepted!' : status === 'rejected' ? 'Booking rejected' : `Status updated: ${status}`,
+    status === 'rejected' ? 'error' : 'success');
+  if (status === 'accepted' || status === 'rejected') {
+    document.getElementById(`booking-${bookingId}`)?.remove();
+  }
+}
+
+async function setStatus(status) {
+  try {
+    await apiFetch(`/api/provider/availability?status=${status}`, {method:'PUT'});
+  } catch {}
+  setStatusUI(status);
+  showToast(`Status set to ${status}`, 'success');
+}
+
+function setStatusUI(status) {
+  document.querySelectorAll('.avail-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.avail-btn.${status}`)?.classList.add('active');
+}
+
+function logout() { localStorage.removeItem('provider_token'); location.href = 'index.html'; }
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+loadDashboard();
+loadEarnings();
+loadBookings();
+</script>
+</body>
+</html>

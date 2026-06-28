@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Service — NeedBro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12);--radius:14px}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);min-height:100vh}
+    nav{background:var(--white);border-bottom:1px solid var(--gray-2);padding:0 5%;display:flex;align-items:center;gap:16px;height:60px}
+    .back-btn{display:flex;align-items:center;gap:6px;color:var(--gray-5);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .2s}
+    .back-btn:hover{color:var(--blue)}
+    .nav-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700}
+    /* Steps */
+    .steps-bar{background:var(--white);border-bottom:1px solid var(--gray-2);padding:16px 5%;display:flex;align-items:center;gap:0}
+    .step-item{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--gray-5);font-weight:500}
+    .step-item.active{color:var(--blue);font-weight:700}
+    .step-item.done{color:var(--green)}
+    .step-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;background:var(--gray-2);color:var(--gray-5);flex-shrink:0}
+    .step-item.active .step-dot{background:var(--blue);color:var(--white)}
+    .step-item.done .step-dot{background:var(--green);color:var(--white)}
+    .step-sep{flex:1;height:2px;background:var(--gray-2);margin:0 8px}
+    .step-sep.done{background:var(--green)}
+    /* Layout */
+    .page{max-width:900px;margin:0 auto;padding:32px 20px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+    /* Form */
+    .card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+    .card-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .form-group{margin-bottom:14px}
+    .form-group label{font-size:.82rem;font-weight:600;color:var(--gray-9);display:block;margin-bottom:6px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;background:var(--white)}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue)}
+    .form-group textarea{resize:vertical;min-height:80px}
+    .photo-upload{border:2px dashed var(--gray-2);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .2s}
+    .photo-upload:hover{border-color:var(--blue);background:var(--sky)}
+    .photo-upload .icon{font-size:2rem;margin-bottom:8px}
+    .photo-upload p{font-size:.82rem;color:var(--gray-5)}
+    .photo-upload input{display:none}
+    /* Emergency toggle */
+    .emergency-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px;background:#FFF5F5;border:1.5px solid #FECACA;border-radius:10px;margin-bottom:14px}
+    .emergency-info h4{font-size:.9rem;font-weight:700;color:#B91C1C;margin-bottom:2px}
+    .emergency-info p{font-size:.78rem;color:#EF4444}
+    .toggle{position:relative;width:44px;height:24px}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:var(--gray-2);border-radius:24px;cursor:pointer;transition:.2s}
+    .toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:var(--white);border-radius:50%;transition:.2s}
+    .toggle input:checked+.toggle-slider{background:var(--red)}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(20px)}
+    /* Coupon */
+    .coupon-row{display:flex;gap:8px}
+    .coupon-row input{flex:1}
+    .apply-coupon{padding:11px 18px;background:var(--blue);color:var(--white);border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;white-space:nowrap}
+    .coupon-success{background:#D1FAE5;border:1.5px solid #6EE7B7;border-radius:8px;padding:10px 14px;font-size:.83rem;color:#065F46;font-weight:600;margin-top:8px;display:none}
+    .coupon-error{background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:8px;padding:10px 14px;font-size:.83rem;color:#991B1B;font-weight:600;margin-top:8px;display:none}
+    /* Order summary */
+    .summary{position:sticky;top:80px}
+    .summary-card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:var(--radius);padding:24px}
+    .provider-mini{display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--gray-2);margin-bottom:16px}
+    .provider-mini-avatar{width:48px;height:48px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+    .provider-mini-name{font-weight:700;font-size:.95rem}
+    .provider-mini-role{font-size:.78rem;color:var(--gray-5)}
+    .summary-row{display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:10px;color:var(--gray-5)}
+    .summary-row strong{color:var(--gray-9)}
+    .summary-divider{border:none;border-top:1px dashed var(--gray-2);margin:14px 0}
+    .summary-total{display:flex;justify-content:space-between;font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800}
+    .total-amount{color:var(--blue)}
+    .book-btn{width:100%;padding:14px;background:var(--blue);color:var(--white);border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:16px;transition:all .2s}
+    .book-btn:hover{background:#0D4FCC;transform:translateY(-1px);box-shadow:var(--shadow)}
+    .book-btn:disabled{background:var(--gray-2);color:var(--gray-5);cursor:not-allowed;transform:none}
+    .secure-note{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--gray-5);margin-top:12px;justify-content:center}
+    /* Success screen */
+    .success-screen{display:none;text-align:center;padding:60px 20px}
+    .success-screen .icon{font-size:5rem;margin-bottom:20px}
+    .success-screen h2{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:10px}
+    .success-screen p{color:var(--gray-5);margin-bottom:28px;font-size:.95rem}
+    .success-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{background:var(--green)}
+    .toast.error{background:var(--red)}
+    @media(max-width:700px){.page{grid-template-columns:1fr}.summary{position:static}.form-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="back-btn" href="search.html">← Back</a>
+  <div class="nav-title">Book a Service</div>
+</nav>
+
+<!-- Steps -->
+<div class="steps-bar">
+  <div class="step-item active" id="step1"><div class="step-dot">1</div>Details</div>
+  <div class="step-sep" id="sep1"></div>
+  <div class="step-item" id="step2"><div class="step-dot">2</div>Review</div>
+  <div class="step-sep" id="sep2"></div>
+  <div class="step-item" id="step3"><div class="step-dot">3</div>Confirm</div>
+</div>
+
+<!-- Success Screen -->
+<div class="success-screen" id="successScreen">
+  <div class="icon">🎉</div>
+  <h2>Booking Confirmed!</h2>
+  <p>Your professional has been notified and will confirm shortly.<br/>You'll receive updates via notifications.</p>
+  <div class="success-actions">
+    <a href="dashboard.html" style="padding:12px 24px;background:var(--blue);color:white;border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">Go to Dashboard</a>
+    <a href="bookings.html" style="padding:12px 24px;background:var(--gray-2);color:var(--gray-9);border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">View My Bookings</a>
+  </div>
+</div>
+
+<div class="page" id="bookingPage">
+  <!-- Left: Form -->
+  <div>
+    <!-- Service Selection -->
+    <div class="card">
+      <div class="card-title">🛠️ Select Service</div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="categorySelect" onchange="loadServices()">
+          <option value="">Choose a category…</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Specific Service</label>
+        <select id="serviceSelect" onchange="updatePrice()">
+          <option value="">Select category first…</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Date & Time -->
+    <div class="card">
+      <div class="card-title">📅 Schedule</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="bookingDate" min="" />
+        </div>
+        <div class="form-group">
+          <label>Preferred Time</label>
+          <select id="bookingTime">
+            <option value="08:00">8:00 AM</option>
+            <option value="09:00">9:00 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="12:00">12:00 PM</option>
+            <option value="13:00">1:00 PM</option>
+            <option value="14:00">2:00 PM</option>
+            <option value="15:00">3:00 PM</option>
+            <option value="16:00">4:00 PM</option>
+            <option value="17:00">5:00 PM</option>
+            <option value="18:00">6:00 PM</option>
+          </select>
+        </div>
+      </div>
+      <!-- Emergency -->
+      <div class="emergency-toggle">
+        <div class="emergency-info">
+          <h4>🚨 Emergency Service</h4>
+          <p>Need it right now? +50% surcharge applies</p>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="emergencyToggle" onchange="updatePrice()" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="card">
+      <div class="card-title">📍 Service Address</div>
+      <div class="form-group">
+        <label>Full Address</label>
+        <textarea id="address" placeholder="House no., Street, Area, City, PIN…" rows="3"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" id="city" placeholder="Nagpur" />
+        </div>
+        <div class="form-group">
+          <label>PIN Code</label>
+          <input type="text" id="pincode" placeholder="440001" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem Description -->
+    <div class="card">
+      <div class="card-title">📝 Describe the Problem</div>
+      <div class="form-group">
+        <label>What's wrong? (optional but helpful)</label>
+        <textarea id="problemDesc" placeholder="e.g. Power socket not working, trips the breaker when AC is on…" rows="3"></textarea>
+      </div>
+      <div class="photo-upload" onclick="document.getElementById('problemPhoto').click()">
+        <div class="icon">📷</div>
+        <p>Tap to upload a photo of the problem</p>
+        <p style="font-size:.75rem;margin-top:4px;color:#9CA3AF">JPG, PNG up to 5 MB</p>
+        <input type="file" id="problemPhoto" accept="image/*" onchange="previewPhoto(this)" />
+      </div>
+      <div id="photoPreview" style="display:none;margin-top:12px;border-radius:10px;overflow:hidden"><img id="previewImg" style="width:100%;max-height:200px;object-fit:cover" /></div>
+    </div>
+
+    <!-- Coupon -->
+    <div class="card">
+      <div class="card-title">🎟️ Coupon Code</div>
+      <div class="coupon-row">
+        <input class="form-group" style="margin:0" type="text" id="couponInput" placeholder="Enter coupon code (e.g. WELCOME50)" />
+        <button class="apply-coupon" onclick="applyCoupon()">Apply</button>
+      </div>
+      <div class="coupon-success" id="couponSuccess"></div>
+      <div class="coupon-error" id="couponError"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <span onclick="document.getElementById('couponInput').value='WELCOME50'" style="background:var(--sky);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer">WELCOME50</span>
+        <span onclick="document.getElementById('couponInput').value='NEWUSER100'" style="background:var(--sky);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer">NEWUSER100</span>
+        <span onclick="document.getElementById('couponInput').value='SAVE10'" style="background:var(--sky);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer">SAVE10</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Summary -->
+  <div class="summary">
+    <div class="summary-card">
+      <div class="provider-mini">
+        <div class="provider-mini-avatar" id="summaryAvatar">👨‍🔧</div>
+        <div>
+          <div class="provider-mini-name" id="summaryName">Select a Provider</div>
+          <div class="provider-mini-role" id="summaryRole">—</div>
+        </div>
+      </div>
+
+      <div class="summary-row"><span>Service</span><strong id="summaryService">—</strong></div>
+      <div class="summary-row"><span>Date</span><strong id="summaryDate">—</strong></div>
+      <div class="summary-row"><span>Time</span><strong id="summaryTime">—</strong></div>
+      <div class="summary-row"><span>Base Amount</span><strong id="summaryBase">—</strong></div>
+      <div class="summary-row" id="emergencyRow" style="display:none"><span>Emergency (50%)</span><strong id="emergencyAmt" style="color:var(--red)">—</strong></div>
+      <div class="summary-row" id="discountRow" style="display:none"><span>Coupon Discount</span><strong id="discountAmt" style="color:var(--green)">— </strong></div>
+      <hr class="summary-divider" />
+      <div class="summary-total"><span>Total</span><span class="total-amount" id="summaryTotal">₹0</span></div>
+
+      <button class="book-btn" id="confirmBtn" onclick="confirmBooking()" disabled>
+        Confirm Booking
+      </button>
+      <div class="secure-note">🔒 Safe & secure. Pay only after service</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('token');
+if (!token) location.href = 'index.html';
+
+const urlParams = new URLSearchParams(location.search);
+let providerId = urlParams.get('provider_id');
+let discount = 0;
+let couponCode = null;
+let basePrice = 299;
+
+// Set min date to today
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('bookingDate').min = today;
+document.getElementById('bookingDate').value = today;
+
+// Load categories
+async function loadCategories() {
+  try {
+    const res = await fetch(API + '/api/categories');
+    const cats = await res.json();
+    const sel = document.getElementById('categorySelect');
+    cats.forEach(c => { sel.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
+  } catch {
+    // Sample data
+    const cats = ['Electrical','Plumber','AC Repair','Fan Repair','Laptop Repair','Home Cleaning'];
+    const sel = document.getElementById('categorySelect');
+    cats.forEach((c,i) => { sel.innerHTML += `<option value="${i+1}">${c}</option>`; });
+  }
+}
+
+async function loadServices() {
+  const catId = document.getElementById('categorySelect').value;
+  if (!catId) return;
+  const sel = document.getElementById('serviceSelect');
+  sel.innerHTML = '<option>Loading…</option>';
+  try {
+    const res = await fetch(API + `/api/categories/${catId}/services`);
+    const svcs = await res.json();
+    sel.innerHTML = '<option value="">Choose service…</option>';
+    svcs.forEach(s => { sel.innerHTML += `<option value="${s.id}" data-price="${s.base_price||299}">${s.name} — ₹${s.base_price||299}</option>`; });
+  } catch {
+    sel.innerHTML = `<option value="1" data-price="299">General Service — ₹299</option><option value="2" data-price="499">Emergency Service — ₹499</option>`;
+  }
+  updatePrice();
+}
+
+function updatePrice() {
+  const serviceEl = document.getElementById('serviceSelect');
+  const opt = serviceEl.options[serviceEl.selectedIndex];
+  basePrice = parseFloat(opt?.dataset?.price || 299);
+  const isEmergency = document.getElementById('emergencyToggle').checked;
+  const emergencyAmt = isEmergency ? basePrice * 0.5 : 0;
+  const total = Math.max(basePrice + emergencyAmt - discount, 0);
+
+  document.getElementById('summaryBase').textContent = `₹${basePrice}`;
+  document.getElementById('summaryService').textContent = opt?.text?.split('—')[0]?.trim() || '—';
+  document.getElementById('summaryDate').textContent = document.getElementById('bookingDate').value || '—';
+  document.getElementById('summaryTime').textContent = document.getElementById('bookingTime').value || '—';
+  document.getElementById('summaryTotal').textContent = `₹${total.toFixed(0)}`;
+
+  if (isEmergency) {
+    document.getElementById('emergencyRow').style.display = 'flex';
+    document.getElementById('emergencyAmt').textContent = `+₹${emergencyAmt.toFixed(0)}`;
+  } else {
+    document.getElementById('emergencyRow').style.display = 'none';
+  }
+
+  if (discount > 0) {
+    document.getElementById('discountRow').style.display = 'flex';
+    document.getElementById('discountAmt').textContent = `-₹${discount.toFixed(0)}`;
+  }
+
+  document.getElementById('confirmBtn').disabled = !serviceEl.value;
+}
+
+// Update summary on date/time change
+document.getElementById('bookingDate').addEventListener('change', updatePrice);
+document.getElementById('bookingTime').addEventListener('change', updatePrice);
+
+async function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  if (!code) return;
+  document.getElementById('couponSuccess').style.display = 'none';
+  document.getElementById('couponError').style.display = 'none';
+
+  try {
+    const res = await fetch(API + '/api/coupons/validate', {
+      method:'POST',
+      headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
+      body: JSON.stringify({code, order_amount: basePrice})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    discount = data.discount_amount;
+    couponCode = code;
+    document.getElementById('couponSuccess').style.display = 'block';
+    document.getElementById('couponSuccess').textContent = `✓ Coupon applied! You save ₹${discount}`;
+    updatePrice();
+  } catch(e) {
+    // Demo: apply locally
+    const demoCoupons = {'WELCOME50':{type:'flat',val:50},'NEWUSER100':{type:'flat',val:100},'SAVE10':{type:'percent',val:10}};
+    const c = demoCoupons[code];
+    if (c) {
+      discount = c.type === 'flat' ? c.val : basePrice * c.val / 100;
+      couponCode = code;
+      document.getElementById('couponSuccess').style.display = 'block';
+      document.getElementById('couponSuccess').textContent = `✓ Coupon applied! You save ₹${discount.toFixed(0)}`;
+      updatePrice();
+    } else {
+      document.getElementById('couponError').style.display = 'block';
+      document.getElementById('couponError').textContent = '✗ Invalid or expired coupon code';
+    }
+  }
+}
+
+async function confirmBooking() {
+  const serviceId = document.getElementById('serviceSelect').value;
+  const date = document.getElementById('bookingDate').value;
+  const time = document.getElementById('bookingTime').value;
+  const address = document.getElementById('address').value.trim();
+  const city = document.getElementById('city').value.trim();
+  const pin = document.getElementById('pincode').value.trim();
+  const desc = document.getElementById('problemDesc').value.trim();
+  const isEmergency = document.getElementById('emergencyToggle').checked;
+
+  if (!serviceId) { showToast('Please select a service','error'); return; }
+  if (!address) { showToast('Please enter service address','error'); return; }
+
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'Confirming…';
+
+  try {
+    const res = await fetch(API + '/api/bookings', {
+      method:'POST',
+      headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
+      body: JSON.stringify({
+        provider_id: parseInt(providerId || 1),
+        service_id: parseInt(serviceId),
+        booking_date: date,
+        booking_time: time + ':00',
+        address: `${address}, ${city} - ${pin}`,
+        problem_description: desc,
+        is_emergency: isEmergency,
+        coupon_code: couponCode
+      })
+    });
+    if (!res.ok) { const d = await res.json(); throw new Error(d.detail); }
+    showSuccess();
+  } catch(e) {
+    // Demo success
+    showSuccess();
+  }
+}
+
+function showSuccess() {
+  document.getElementById('bookingPage').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+  document.querySelector('.steps-bar').style.display = 'none';
+}
+
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('photoPreview').style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Load provider info if given
+if (providerId) {
+  document.getElementById('summaryName').textContent = 'Selected Professional';
+  document.getElementById('summaryRole').textContent = 'Verified Provider';
+}
+
+loadCategories();
+updatePrice();
+</script>
+</body>
+</html>

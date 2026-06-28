@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeedBro — Home Services at Your Door</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:    #1A6BFF;
+      --blue-dk: #0D4FCC;
+      --navy:    #0A1628;
+      --sky:     #EBF2FF;
+      --amber:   #FF8C00;
+      --green:   #12B76A;
+      --red:     #F04438;
+      --gray-1:  #F8FAFF;
+      --gray-2:  #E8EDF7;
+      --gray-5:  #6B7280;
+      --gray-9:  #111827;
+      --white:   #FFFFFF;
+      --shadow:  0 4px 24px rgba(26,107,255,.12);
+      --radius:  14px;
+    }
+
+    body { font-family: 'Inter', sans-serif; color: var(--gray-9); background: var(--white); }
+    h1,h2,h3,h4 { font-family: 'Sora', sans-serif; }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-2);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo { font-family: 'Sora',sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--blue); letter-spacing: -.5px; }
+    .nav-logo span { color: var(--amber); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray-5); font-size: .9rem; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-cta { display: flex; gap: 10px; }
+    .btn { padding: 9px 20px; border-radius: 8px; font-size: .9rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--blue); color: var(--blue); }
+    .btn-outline:hover { background: var(--sky); }
+    .btn-primary { background: var(--blue); color: var(--white); }
+    .btn-primary:hover { background: var(--blue-dk); transform: translateY(-1px); box-shadow: var(--shadow); }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #112244 60%, #0D3680 100%);
+      padding: 90px 5% 80px;
+      display: flex; align-items: center; justify-content: space-between; gap: 40px;
+      overflow: hidden; position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(26,107,255,.25) 0%, transparent 70%);
+    }
+    .hero-text { max-width: 580px; position: relative; z-index: 1; }
+    .hero-badge { display: inline-block; background: rgba(26,107,255,.2); border: 1px solid rgba(26,107,255,.4); color: #7EB3FF; font-size: .8rem; font-weight: 600; padding: 5px 14px; border-radius: 20px; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; color: var(--white); line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 em { color: var(--amber); font-style: normal; }
+    .hero p { color: #A8BDD8; font-size: 1.05rem; line-height: 1.7; margin-bottom: 32px; }
+    .hero-stats { display: flex; gap: 32px; margin-bottom: 36px; }
+    .stat { text-align: left; }
+    .stat-num { font-family: 'Sora',sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--white); }
+    .stat-label { font-size: .75rem; color: #7A9CC4; margin-top: 2px; }
+
+    /* Search Box */
+    .search-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 8px 8px 8px 18px;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.3);
+      max-width: 540px;
+    }
+    .search-box input {
+      flex: 1; border: none; outline: none;
+      font-size: .95rem; color: var(--gray-9);
+      font-family: 'Inter', sans-serif;
+    }
+    .search-box input::placeholder { color: var(--gray-5); }
+    .search-box .btn-primary { border-radius: 8px; padding: 10px 22px; white-space: nowrap; }
+
+    /* Hero Image Side */
+    .hero-visual {
+      position: relative; z-index: 1; flex-shrink: 0;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      max-width: 340px;
+    }
+    .hero-card {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .hero-card .icon { font-size: 2rem; margin-bottom: 8px; }
+    .hero-card .card-title { color: var(--white); font-size: .8rem; font-weight: 600; }
+    .hero-card .card-price { color: var(--amber); font-size: .75rem; margin-top: 4px; }
+    .hero-card.featured { grid-column: span 2; display: flex; align-items: center; gap: 14px; text-align: left; background: rgba(26,107,255,.15); border-color: rgba(26,107,255,.3); }
+    .hero-card.featured .icon { font-size: 2.5rem; margin-bottom: 0; }
+
+    /* ── HOW IT WORKS ────────────────────────────────────────── */
+    .section { padding: 80px 5%; }
+    .section-label { color: var(--blue); font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+    .section-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: var(--gray-9); margin-bottom: 12px; }
+    .section-sub { color: var(--gray-5); font-size: 1rem; max-width: 520px; line-height: 1.7; }
+    .section-header { margin-bottom: 48px; }
+
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; position: relative; }
+    .steps::after {
+      content: ''; position: absolute; top: 40px; left: 15%; right: 15%;
+      height: 2px; background: var(--gray-2); z-index: 0;
+    }
+    .step { text-align: center; position: relative; z-index: 1; }
+    .step-num {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--blue); color: var(--white);
+      font-family: 'Sora',sans-serif; font-size: 1.2rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; border: 4px solid var(--white);
+      box-shadow: 0 0 0 4px var(--sky);
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .step p { font-size: .85rem; color: var(--gray-5); line-height: 1.6; max-width: 180px; margin: 0 auto; }
+
+    /* ── CATEGORIES ──────────────────────────────────────────── */
+    .categories-section { background: var(--gray-1); }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 14px;
+    }
+    .cat-card {
+      background: var(--white);
+      border: 1.5px solid var(--gray-2);
+      border-radius: var(--radius);
+      padding: 20px 12px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .cat-card:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: var(--shadow); }
+    .cat-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+    .cat-name { font-size: .8rem; font-weight: 600; color: var(--gray-9); }
+
+    /* ── PROVIDERS ───────────────────────────────────────────── */
+    .providers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .provider-card {
+      background: var(--white); border: 1.5px solid var(--gray-2);
+      border-radius: var(--radius); padding: 20px;
+      transition: all .2s; cursor: pointer;
+    }
+    .provider-card:hover { border-color: var(--blue); box-shadow: var(--shadow); transform: translateY(-2px); }
+    .provider-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .provider-avatar {
+      width: 54px; height: 54px; border-radius: 50%;
+      background: var(--sky); display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .provider-name { font-weight: 700; font-size: 1rem; margin-bottom: 3px; }
+    .provider-role { font-size: .8rem; color: var(--gray-5); }
+    .verified-badge { background: #D1FAE5; color: #065F46; font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-top: 4px; }
+    .provider-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .stars { color: var(--amber); font-size: .9rem; }
+    .rating-num { font-weight: 600; font-size: .85rem; }
+    .rating-count { color: var(--gray-5); font-size: .8rem; }
+    .provider-meta { display: flex; gap: 14px; }
+    .meta-item { font-size: .8rem; color: var(--gray-5); }
+    .meta-item strong { color: var(--gray-9); }
+    .provider-price { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-2); display: flex; align-items: center; justify-content: space-between; }
+    .price-tag { font-family: 'Sora',sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--blue); }
+    .price-unit { font-size: .75rem; color: var(--gray-5); }
+
+    /* ── REVIEWS ─────────────────────────────────────────────── */
+    .reviews-section { background: var(--navy); }
+    .reviews-section .section-label { color: var(--amber); }
+    .reviews-section .section-title { color: var(--white); }
+    .reviews-section .section-sub { color: #7A9CC4; }
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .review-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .review-stars { color: var(--amber); margin-bottom: 12px; }
+    .review-text { color: #C8D8EC; font-size: .9rem; line-height: 1.7; margin-bottom: 16px; }
+    .reviewer { display: flex; align-items: center; gap: 10px; }
+    .reviewer-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(26,107,255,.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .reviewer-name { color: var(--white); font-weight: 600; font-size: .85rem; }
+    .reviewer-date { color: #7A9CC4; font-size: .75rem; }
+
+    /* ── APP BANNER ──────────────────────────────────────────── */
+    .app-banner {
+      background: linear-gradient(135deg, var(--blue) 0%, #0D4FCC 100%);
+      border-radius: 24px;
+      padding: 48px;
+      display: flex; align-items: center; justify-content: space-between; gap: 40px;
+      margin:  5% 60px;
+    }
+    .app-banner h2 { font-size: clamp(1.4rem,2.5vw,2rem); font-weight: 800; color: var(--white); margin-bottom: 10px; }
+    .app-banner p { color: rgba(255,255,255,.75); font-size: .95rem; line-height: 1.6; margin-bottom: 24px; max-width: 400px; }
+    .app-stores { display: flex; gap: 12px; }
+    .store-btn { background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.2); color: var(--white); padding: 10px 20px; border-radius: 10px; font-size: .85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all .2s; }
+    .store-btn:hover { background: rgba(255,255,255,.2); }
+    .phone-mockup { font-size: 8rem; flex-shrink: 0; }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      padding: 56px 5% 32px;
+    }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-brand .nav-logo { font-size: 1.6rem; margin-bottom: 14px; display: block; }
+    .footer-brand p { color: #7A9CC4; font-size: .85rem; line-height: 1.7; max-width: 280px; }
+    .footer-col h4 { color: var(--white); font-size: .85rem; font-weight: 700; margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a { color: #7A9CC4; text-decoration: none; font-size: .85rem; transition: color .2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-bottom p { color: #4A6A9A; font-size: .8rem; }
+
+    /* ── MODAL ───────────────────────────────────────────────── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 999; backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: var(--white); border-radius: 20px; padding: 36px; width: 100%; max-width: 440px; position: relative; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: var(--gray-2); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+    .modal h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; }
+    .modal p { color: var(--gray-5); font-size: .9rem; margin-bottom: 24px; }
+    .modal-tabs { display: flex; border-bottom: 2px solid var(--gray-2); margin-bottom: 24px; }
+    .modal-tab { padding: 10px 20px; font-weight: 600; font-size: .9rem; cursor: pointer; color: var(--gray-5); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .2s; }
+    .modal-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { font-size: .82rem; font-weight: 600; color: var(--gray-9); display: block; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-2);
+      border-radius: 8px; font-size: .9rem; font-family: 'Inter',sans-serif;
+      outline: none; transition: border-color .2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--blue); }
+    .form-submit { width: 100%; padding: 13px; background: var(--blue); color: var(--white); border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .2s; font-family: 'Sora',sans-serif; }
+    .form-submit:hover { background: var(--blue-dk); transform: translateY(-1px); }
+    .divider { text-align: center; color: var(--gray-5); font-size: .82rem; margin: 16px 0; position: relative; }
+    .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--gray-2); }
+    .divider::before { left: 0; } .divider::after { right: 0; }
+    .google-btn { width: 100%; padding: 11px; border: 1.5px solid var(--gray-2); border-radius: 10px; background: var(--white); font-size: .9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all .2s; font-family: 'Inter',sans-serif; }
+    .google-btn:hover { background: var(--gray-1); }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--navy); color: var(--white); padding: 14px 20px; border-radius: 10px; font-size: .9rem; font-weight: 500; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all .3s; pointer-events: none; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+
+    @media (max-width: 768px) {
+      .hero { flex-direction: column; padding: 60px 5% 50px; }
+      .hero-visual { display: none; }
+      .steps::after { display: none; }
+      .steps { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .app-banner { flex-direction: column; text-align: center; margin: 0 4% 40px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">Need<span>Bro</span></div>
+  <ul class="nav-links">
+    <li><a href="#categories">Services</a></li>
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#providers">Professionals</a></li>
+    <li><a href="provider-register.html">Join as Pro</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn btn-outline" onclick="openModal('login')">Sign in</button>
+    <button class="btn btn-primary" onclick="openModal('register')">Get Started</button>
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">🚀 10,000+ Verified Professionals</div>
+    <h1>Your home fixed,<br /><em>today</em>.</h1>
+    <p>Book skilled electricians, plumbers, AC repair specialists, and 24 more services — in under 2 minutes. Verified pros, upfront pricing, live tracking.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">27+</div><div class="stat-label">Service categories</div></div>
+      <div class="stat"><div class="stat-num">4.8★</div><div class="stat-label">Average rating</div></div>
+      <div class="stat"><div class="stat-num">50K+</div><div class="stat-label">Happy customers</div></div>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="What do you need fixed? e.g. Fan Repair" />
+      <button class="btn btn-primary" onclick="doSearch()">Search</button>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-card featured">
+      <div class="icon">⚡</div>
+      <div>
+        <div class="card-title">Raj — Electrician</div>
+        <div style="color:#12B76A;font-size:.75rem;margin-top:4px;">✓ Verified · 4.9★</div>
+        <div class="card-price">₹299 / visit</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="icon">🔧</div>
+      <div class="card-title">Plumber</div>
+      <div class="card-price">from ₹199</div>
+    </div>
+    <div class="hero-card">
+      <div class="icon">❄️</div>
+      <div class="card-title">AC Repair</div>
+      <div class="card-price">from ₹499</div>
+    </div>
+    <div class="hero-card">
+      <div class="icon">🖥️</div>
+      <div class="card-title">Laptop Fix</div>
+      <div class="card-price">from ₹299</div>
+    </div>
+    <div class="hero-card">
+      <div class="icon">🏠</div>
+      <div class="card-title">Cleaning</div>
+      <div class="card-price">from ₹799</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
+<section class="section" id="how-it-works">
+  <div class="section-header">
+    <div class="section-label">Simple process</div>
+    <h2 class="section-title">Service in 4 steps</h2>
+    <p class="section-sub">From search to done — the whole flow is designed to take under 5 minutes of your time.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Search</h3>
+      <p>Type what you need or pick from 27 categories</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Choose a Pro</h3>
+      <p>Compare ratings, distance, and price. Pick the best fit.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Book a Slot</h3>
+      <p>Pick date, time, and describe your problem. Add a photo if needed.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>Done & Pay</h3>
+      <p>Track your pro live. Pay only after the job's complete.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── CATEGORIES ────────────────────────────────────────────────── -->
+<section class="section categories-section" id="categories">
+  <div class="section-header">
+    <div class="section-label">All services</div>
+    <h2 class="section-title">What can we fix today?</h2>
+  </div>
+  <div class="categories-grid" id="categoriesGrid">
+    <!-- JS fills this -->
+  </div>
+</section>
+
+<!-- ── TOP PROVIDERS ─────────────────────────────────────────────── -->
+<section class="section" id="providers">
+  <div class="section-header">
+    <div class="section-label">Top rated</div>
+    <h2 class="section-title">Professionals near you</h2>
+    <p class="section-sub">Every provider is background-verified and rated by real customers.</p>
+  </div>
+  <div class="providers-grid" id="providersGrid">
+    <!-- JS fills this -->
+  </div>
+</section>
+
+<!-- ── REVIEWS ───────────────────────────────────────────────────── -->
+<section class="section reviews-section">
+  <div class="section-header">
+    <div class="section-label">Customer love</div>
+    <h2 class="section-title">What people say</h2>
+    <p class="section-sub">Real reviews from real customers — no cherry-picking.</p>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"The electrician arrived within 20 minutes. Fixed the entire wiring issue in under an hour. Super professional and clean work!"</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">👨</div>
+        <div>
+          <div class="reviewer-name">Rahul Sharma</div>
+          <div class="reviewer-date">Electrical · 3 days ago</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Booked an AC service for the first time. Mohan was punctual, explained everything, and the AC is running like new. ₹599 well spent."</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">👩</div>
+        <div>
+          <div class="reviewer-name">Priya Patel</div>
+          <div class="reviewer-date">AC Repair · 1 week ago</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★☆</div>
+      <p class="review-text">"Pipe leakage fixed the same evening. Great communication via chat. Would've been 5 stars if he arrived 15 min earlier but overall excellent."</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">👨</div>
+        <div>
+          <div class="reviewer-name">Aakash Verma</div>
+          <div class="reviewer-date">Plumber · 2 weeks ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── APP BANNER ────────────────────────────────────────────────── -->
+<div class="app-banner">
+  <div>
+    <h2>NeedBro on your phone</h2>
+    <p>Track your pro in real-time, chat, pay with UPI — all from the app. Coming soon on Android and iOS.</p>
+    <div class="app-stores">
+      <button class="store-btn">📱 Google Play</button>
+      <button class="store-btn">🍎 App Store</button>
+    </div>
+  </div>
+  <div class="phone-mockup">📱</div>
+</div>
+
+<!-- ── FOOTER ────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="nav-logo">Need<span>Bro</span></span>
+      <p>Your trusted partner for all home service needs. 10,000+ verified professionals across India.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#">Electrical</a></li>
+        <li><a href="#">Plumber</a></li>
+        <li><a href="#">AC Repair</a></li>
+        <li><a href="#">Home Cleaning</a></li>
+        <li><a href="#">All Services →</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About us</a></li>
+        <li><a href="#">Join as Pro</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Help center</a></li>
+        <li><a href="#">Privacy policy</a></li>
+        <li><a href="#">Terms of use</a></li>
+        <li><a href="#">Refund policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 NeedBro. Made in India 🇮🇳</p>
+    <p>All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ── AUTH MODAL ────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modalTitle">Welcome back</h2>
+    <p id="modalSub">Sign in to book a service</p>
+    <div class="modal-tabs">
+      <div class="modal-tab active" onclick="switchTab('login')">Sign in</div>
+      <div class="modal-tab" onclick="switchTab('register')">Register</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <button class="form-submit" onclick="login()">Sign in</button>
+      <div class="divider">or</div>
+      <button class="google-btn">🌐 Continue with Google</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" style="display:none">
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" id="regName" placeholder="Your name" />
+      </div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="regEmail" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Mobile number</label>
+        <input type="tel" id="regMobile" placeholder="+91 XXXXX XXXXX" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Min 8 characters" />
+      </div>
+      <div class="form-group">
+        <label>Referral code (optional)</label>
+        <input type="text" id="regReferral" placeholder="e.g. NBXXXXXX" />
+      </div>
+      <button class="form-submit" onclick="register()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ─────────────────────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';  // Same origin; change to http://localhost:8000 in dev
+
+// ── Categories ──────────────────────────────────────────────────
+const CATEGORIES = [
+  {icon:'⚡',name:'Electrical'},{icon:'🔧',name:'Plumber'},{icon:'❄️',name:'AC Repair'},
+  {icon:'🌀',name:'Fan Repair'},{icon:'🫧',name:'Washing Machine'},{icon:'🚗',name:'Car Mechanic'},
+  {icon:'🏍️',name:'Bike Mechanic'},{icon:'💻',name:'Computer Repair'},{icon:'🖥️',name:'Laptop Repair'},
+  {icon:'🎨',name:'Painter'},{icon:'🪚',name:'Carpenter'},{icon:'🧹',name:'Home Cleaning'},
+  {icon:'💧',name:'RO Service'},{icon:'📹',name:'CCTV'},{icon:'🌿',name:'Gardener'},
+  {icon:'👨‍🍳',name:'Cook'},{icon:'📚',name:'Tutor'},{icon:'📦',name:'Packers & Movers'},
+  {icon:'💄',name:'Beauty'},{icon:'🧵',name:'Tailor'},{icon:'🐜',name:'Pest Control'},
+  {icon:'🛋️',name:'Furniture Repair'},{icon:'📺',name:'TV Repair'},{icon:'🚿',name:'Tank Cleaning'},
+  {icon:'🔑',name:'Locksmith'},{icon:'📱',name:'Mobile Repair'},{icon:'🔥',name:'Gas Stove'}
+];
+
+(function renderCategories() {
+  const grid = document.getElementById('categoriesGrid');
+  CATEGORIES.forEach(c => {
+    grid.innerHTML += `
+      <a class="cat-card" href="search.html?q=${encodeURIComponent(c.name)}">
+        <span class="cat-icon">${c.icon}</span>
+        <div class="cat-name">${c.name}</div>
+      </a>`;
+  });
+})();
+
+// ── Sample Providers ─────────────────────────────────────────────
+const SAMPLE_PROVIDERS = [
+  {name:'Raj Kumar',role:'Electrician',rating:4.9,jobs:312,dist:'1.2 km',price:299,verified:true,emoji:'👨‍🔧'},
+  {name:'Mohan Singh',role:'AC Technician',rating:4.8,jobs:198,dist:'2.4 km',price:499,verified:true,emoji:'🧑‍🔧'},
+  {name:'Sunita Devi',role:'Home Cleaner',rating:4.7,jobs:421,dist:'0.8 km',price:699,verified:true,emoji:'👩'},
+  {name:'Aman Gupta',role:'Plumber',rating:4.6,jobs:156,dist:'3.1 km',price:249,verified:false,emoji:'👨'},
+];
+
+(function renderProviders() {
+  const grid = document.getElementById('providersGrid');
+  SAMPLE_PROVIDERS.forEach(p => {
+    grid.innerHTML += `
+      <div class="provider-card" onclick="location.href='provider.html?id=1'">
+        <div class="provider-top">
+          <div class="provider-avatar">${p.emoji}</div>
+          <div>
+            <div class="provider-name">${p.name}</div>
+            <div class="provider-role">${p.role}</div>
+            ${p.verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
+          </div>
+        </div>
+        <div class="provider-rating">
+          <span class="stars">★★★★★</span>
+          <span class="rating-num">${p.rating}</span>
+          <span class="rating-count">(${p.jobs} jobs)</span>
+        </div>
+        <div class="provider-meta">
+          <div class="meta-item">📍 <strong>${p.dist}</strong></div>
+          <div class="meta-item">🛠️ <strong>${p.jobs} jobs</strong></div>
+        </div>
+        <div class="provider-price">
+          <div>
+            <span class="price-tag">₹${p.price}</span>
+            <span class="price-unit">&nbsp;/ visit</span>
+          </div>
+          <button class="btn btn-primary" style="padding:8px 16px;font-size:.82rem;" onclick="event.stopPropagation();bookProvider(${p.name})">Book Now</button>
+        </div>
+      </div>`;
+  });
+})();
+
+// ── Auth ─────────────────────────────────────────────────────────
+function openModal(tab='login') {
+  document.getElementById('authModal').classList.add('active');
+  switchTab(tab);
+}
+function closeModal() {
+  document.getElementById('authModal').classList.remove('active');
+}
+function switchTab(tab) {
+  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('loginForm').style.display    = tab==='login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('modalTitle').textContent = tab==='login' ? 'Welcome back' : 'Create account';
+  document.getElementById('modalSub').textContent   = tab==='login' ? 'Sign in to book a service' : 'Join 50,000+ happy customers';
+}
+
+async function login() {
+  const email    = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showToast('Please fill all fields','error'); return; }
+  try {
+    const res = await fetch(`${API}/api/auth/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Login failed');
+    localStorage.setItem('token', data.access_token);
+    localStorage.setItem('role', 'user');
+    closeModal();
+    showToast('Signed in successfully ✓', 'success');
+    setTimeout(() => location.href = 'dashboard.html', 800);
+  } catch(e) { showToast(e.message, 'error'); }
+}
+
+async function register() {
+  const name     = document.getElementById('regName').value;
+  const email    = document.getElementById('regEmail').value;
+  const mobile   = document.getElementById('regMobile').value;
+  const password = document.getElementById('regPassword').value;
+  const referral = document.getElementById('regReferral').value;
+  if (!name || !email || !mobile || !password) { showToast('Please fill all required fields','error'); return; }
+  try {
+    const res = await fetch(`${API}/api/auth/register`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name, email, mobile, password, referral_code: referral||undefined})
+    });
+    const data = await res.json();
+  
+    if (!res.ok) throw new Error(data.detail || 'Registration failed');
+    localStorage.setItem('token', data.access_token);
+    localStorage.setItem('role', 'user');
+    closeModal();
+    showToast('Account created! Welcome to NeedBro 🎉', 'success');
+    setTimeout(() => location.href = 'dashboard.html', 1000);
+  } catch(e) { showToast(e.message, 'error'); }
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (q) location.href = `search.html?q=${encodeURIComponent(q)}`;
+}
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+
+function bookProvider(name) {
+  const token = localStorage.getItem('token');
+  if (!token) { openModal('login'); return; }
+  location.href = 'booking.html';
+}
+
+// ── Toast ────────────────────────────────────────────────────────
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Close modal on overlay click
+document.getElementById('authModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── Check if already logged in ───────────────────────────────────
+if (localStorage.getItem('token')) {
+  document.querySelector('.nav-cta').innerHTML = `
+    <span style="font-size:.85rem;color:var(--gray-5)">Signed in</span>
+    <a href="dashboard.html" class="btn btn-primary">My Dashboard</a>`;
+}
+</script>
+</body>
+</html>

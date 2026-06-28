@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — NeedBro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--purple:#7C3AED;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12)}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);display:flex;min-height:100vh}
+    /* Sidebar */
+    .sidebar{width:220px;background:#0F0F1A;min-height:100vh;padding:24px 14px;flex-shrink:0;position:sticky;top:0;height:100vh}
+    .sidebar-logo{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:6px;padding:0 8px}
+    .sidebar-logo span{color:var(--amber)}
+    .admin-badge{font-size:.68rem;font-weight:700;background:#7C3AED22;color:#A78BFA;border:1px solid #7C3AED44;padding:3px 10px;border-radius:20px;margin-left:8px;margin-bottom:24px;display:inline-block}
+    .nav-section{font-size:.65rem;font-weight:700;color:#3A3A5A;text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:8px;margin-top:20px}
+    .sidebar-nav{list-style:none;display:flex;flex-direction:column;gap:3px}
+    .sidebar-nav a{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;text-decoration:none;color:#7A7A9A;font-size:.83rem;font-weight:500;transition:all .2s}
+    .sidebar-nav a:hover,.sidebar-nav .active a{background:rgba(124,58,237,.15);color:var(--white)}
+    .sidebar-nav .active a{background:var(--purple);color:var(--white)}
+    .sidebar-icon{font-size:.95rem;width:18px;text-align:center}
+    /* Main */
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .topbar{background:var(--white);border-bottom:1px solid var(--gray-2);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .topbar-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .notif-btn{background:var(--gray-1);border:1.5px solid var(--gray-2);border-radius:8px;padding:7px 12px;cursor:pointer;font-size:.9rem}
+    .admin-avatar{width:36px;height:36px;border-radius:50%;background:var(--purple);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:.9rem}
+    .content{flex:1;padding:24px 28px;overflow-y:auto}
+    /* Stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    .stat-card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .stat-card.blue::before{background:var(--blue)}
+    .stat-card.green::before{background:var(--green)}
+    .stat-card.amber::before{background:var(--amber)}
+    .stat-card.purple::before{background:var(--purple)}
+    .stat-card.red::before{background:var(--red)}
+    .stat-label{font-size:.73rem;color:var(--gray-5);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .stat-value{font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:800}
+    .stat-sub{font-size:.75rem;color:var(--green);margin-top:4px}
+    .stat-sub.warn{color:var(--amber)}
+    .stat-sub.danger{color:var(--red)}
+    /* Content grid */
+    .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:14px;padding:20px}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .card-title{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700}
+    .btn-xs{padding:5px 12px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;border:none;background:var(--blue);color:var(--white);text-decoration:none}
+    /* Table */
+    table{width:100%;border-collapse:collapse}
+    th{text-align:left;font-size:.72rem;font-weight:700;color:var(--gray-5);padding:8px 10px;border-bottom:2px solid var(--gray-2);text-transform:uppercase;letter-spacing:.5px}
+    td{padding:10px;border-bottom:1px solid var(--gray-2);font-size:.82rem}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--gray-1)}
+    .badge{padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:700}
+    .badge-green{background:#D1FAE5;color:#065F46}
+    .badge-red{background:#FEE2E2;color:#991B1B}
+    .badge-yellow{background:#FEF3C7;color:#92400E}
+    .badge-blue{background:#DBEAFE;color:#1D4ED8}
+    .badge-purple{background:#EDE9FE;color:#5B21B6}
+    .action-link{color:var(--blue);font-size:.78rem;cursor:pointer;font-weight:600;text-decoration:none;background:none;border:none;padding:0}
+    .action-link:hover{text-decoration:underline}
+    .action-link.danger{color:var(--red)}
+    /* Verify list */
+    .verify-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--gray-2)}
+    .verify-item:last-child{border-bottom:none}
+    .v-avatar{width:38px;height:38px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .v-name{font-weight:600;font-size:.85rem}
+    .v-role{font-size:.75rem;color:var(--gray-5);margin-top:2px}
+    .v-actions{margin-left:auto;display:flex;gap:6px}
+    .verify-btn{padding:5px 12px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;border:none}
+    .verify-btn.approve{background:#D1FAE5;color:#065F46}
+    .verify-btn.approve:hover{background:#A7F3D0}
+    .verify-btn.reject{background:#FEE2E2;color:#B91C1C}
+    /* Revenue chart placeholder */
+    .chart-placeholder{background:var(--gray-1);border-radius:10px;padding:40px;text-align:center;color:var(--gray-5);font-size:.88rem}
+    /* Panels */
+    .panel-tabs{display:flex;border-bottom:2px solid var(--gray-2);margin-bottom:16px;gap:0}
+    .panel-tab{padding:9px 18px;font-size:.83rem;font-weight:600;cursor:pointer;color:var(--gray-5);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+    .panel-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+    .full-width{grid-column:span 2}
+    .search-filter{display:flex;gap:10px;margin-bottom:14px}
+    .search-filter input,.search-filter select{padding:8px 12px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:.83rem;font-family:'Inter',sans-serif;outline:none}
+    .search-filter input{flex:1}
+    .search-filter input:focus,.search-filter select:focus{border-color:var(--blue)}
+    @media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.content-grid{grid-template-columns:1fr}.full-width{grid-column:1}.sidebar{display:none}}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div>
+    <div class="sidebar-logo">Need<span>Bro</span> <span class="admin-badge">ADMIN</span></div>
+  </div>
+  <div class="nav-section">Overview</div>
+  <ul class="sidebar-nav">
+    <li class="active"><a href="#" onclick="showSection('dashboard')"><span class="sidebar-icon">📊</span>Dashboard</a></li>
+  </ul>
+  <div class="nav-section">Management</div>
+  <ul class="sidebar-nav">
+    <li><a href="#" onclick="showSection('users')"><span class="sidebar-icon">👥</span>Users</a></li>
+    <li><a href="#" onclick="showSection('providers')"><span class="sidebar-icon">🔧</span>Providers</a></li>
+    <li><a href="#" onclick="showSection('bookings')"><span class="sidebar-icon">📋</span>Bookings</a></li>
+    <li><a href="#" onclick="showSection('payments')"><span class="sidebar-icon">💰</span>Payments</a></li>
+  </ul>
+  <div class="nav-section">Support</div>
+  <ul class="sidebar-nav">
+    <li><a href="#" onclick="showSection('complaints')"><span class="sidebar-icon">🚨</span>Complaints</a></li>
+    <li><a href="#" onclick="showSection('reviews')"><span class="sidebar-icon">⭐</span>Reviews</a></li>
+  </ul>
+  <div class="nav-section">Settings</div>
+  <ul class="sidebar-nav">
+    <li><a href="#" onclick="showSection('categories')"><span class="sidebar-icon">🗂️</span>Categories</a></li>
+    <li><a href="#" onclick="showSection('coupons')"><span class="sidebar-icon">🎟️</span>Coupons</a></li>
+    <li><a href="index.html" onclick="logout()"><span class="sidebar-icon">🚪</span>Logout</a></li>
+  </ul>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard Overview</div>
+    <div class="topbar-right">
+      <button class="notif-btn">🔔</button>
+      <div class="admin-avatar">A</div>
+    </div>
+  </div>
+
+  <div class="content" id="mainContent">
+    <!-- Dashboard section -->
+    <div id="section-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="statUsers">—</div>
+          <div class="stat-sub">↑ customers</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Providers</div>
+          <div class="stat-value" id="statProviders">—</div>
+          <div class="stat-sub" id="statPendingVerif">—</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Total Bookings</div>
+          <div class="stat-value" id="statBookings">—</div>
+          <div class="stat-sub warn" id="statPendingBookings">—</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value" id="statRevenue">—</div>
+          <div class="stat-sub" id="statWeekRev">—</div>
+        </div>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card red">
+          <div class="stat-label">Open Complaints</div>
+          <div class="stat-value" id="statComplaints">—</div>
+          <div class="stat-sub danger">Needs attention</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Pending Verifications</div>
+          <div class="stat-value" id="statVerif">—</div>
+          <div class="stat-sub warn">Providers waiting</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Week Revenue</div>
+          <div class="stat-value" id="statWeekRevBig">—</div>
+          <div class="stat-sub">This week</div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <!-- Pending Verifications -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔍 Pending Provider Verifications</div>
+            <a href="#" onclick="showSection('providers')" class="btn-xs">View All</a>
+          </div>
+          <div id="pendingVerifList">
+            <div style="text-align:center;padding:20px;color:var(--gray-5)">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 Recent Bookings</div>
+            <a href="#" onclick="showSection('bookings')" class="btn-xs">View All</a>
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>User</th><th>Status</th><th>Amount</th></tr></thead>
+            <tbody id="recentBookings"></tbody>
+          </table>
+        </div>
+
+        <!-- Open Complaints -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🚨 Open Complaints</div>
+            <a href="#" onclick="showSection('complaints')" class="btn-xs">View All</a>
+          </div>
+          <div id="complaintsPreview">
+            <div style="text-align:center;padding:20px;color:var(--gray-5)">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">💰 Revenue Overview</div></div>
+          <div class="chart-placeholder">
+            📊 Revenue chart coming soon<br/>
+            <small>Integration with Recharts / Chart.js planned</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users section -->
+    <div id="section-users" style="display:none">
+      <div class="card full-width">
+        <div class="card-header">
+          <div class="card-title">👥 All Users</div>
+        </div>
+        <div class="search-filter">
+          <input type="text" id="userSearch" placeholder="Search by name or email…" oninput="filterUsers()" />
+          <select onchange="filterUsers()">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Mobile</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Providers section -->
+    <div id="section-providers" style="display:none">
+      <div class="card full-width">
+        <div class="card-header">
+          <div class="card-title">🔧 All Providers</div>
+        </div>
+        <div class="search-filter">
+          <input type="text" placeholder="Search providers…" />
+          <select id="providerFilter" onchange="loadProviders()">
+            <option value="">All</option>
+            <option value="false">Unverified</option>
+            <option value="true">Verified</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Rating</th><th>Jobs</th><th>Verified</th><th>Actions</th></tr></thead>
+          <tbody id="providersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bookings section -->
+    <div id="section-bookings" style="display:none">
+      <div class="card full-width">
+        <div class="card-header"><div class="card-title">📋 All Bookings</div></div>
+        <div class="search-filter">
+          <input type="text" placeholder="Search booking ID…" />
+          <select id="bookingStatusFilter" onchange="loadBookings()">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>User</th><th>Provider</th><th>Date</th><th>Status</th><th>Amount</th></tr></thead>
+          <tbody id="bookingsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Complaints section -->
+    <div id="section-complaints" style="display:none">
+      <div class="card full-width">
+        <div class="card-header"><div class="card-title">🚨 Complaints</div></div>
+        <table>
+          <thead><tr><th>#</th><th>Booking</th><th>Raised By</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="complaintsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Categories section -->
+    <div id="section-categories" style="display:none">
+      <div class="card full-width">
+        <div class="card-header">
+          <div class="card-title">🗂️ Service Categories</div>
+          <button class="btn-xs" onclick="addCategory()">+ Add Category</button>
+        </div>
+        <div id="categoriesList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+      </div>
+    </div>
+
+    <!-- Coupons section -->
+    <div id="section-coupons" style="display:none">
+      <div class="card full-width">
+        <div class="card-header">
+          <div class="card-title">🎟️ Coupons</div>
+          <button class="btn-xs" onclick="showCouponForm()">+ Create Coupon</button>
+        </div>
+        <div id="couponForm" style="display:none;background:var(--gray-1);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+            <div><label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:4px">Code</label><input id="cCode" type="text" placeholder="SAVE50" style="width:100%;padding:8px;border:1.5px solid var(--gray-2);border-radius:6px;font-size:.85rem;outline:none" /></div>
+            <div><label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:4px">Type</label><select id="cType" style="width:100%;padding:8px;border:1.5px solid var(--gray-2);border-radius:6px;font-size:.85rem;outline:none"><option value="flat">Flat ₹</option><option value="percent">Percent %</option></select></div>
+            <div><label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:4px">Value</label><input id="cVal" type="number" placeholder="50" style="width:100%;padding:8px;border:1.5px solid var(--gray-2);border-radius:6px;font-size:.85rem;outline:none" /></div>
+            <div><label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:4px">Min Order ₹</label><input id="cMin" type="number" placeholder="199" style="width:100%;padding:8px;border:1.5px solid var(--gray-2);border-radius:6px;font-size:.85rem;outline:none" /></div>
+            <div><label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:4px">Max Uses</label><input id="cMax" type="number" placeholder="100" style="width:100%;padding:8px;border:1.5px solid var(--gray-2);border-radius:6px;font-size:.85rem;outline:none" /></div>
+            <div><label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:4px">Valid Until</label><input id="cDate" type="date" style="width:100%;padding:8px;border:1.5px solid var(--gray-2);border-radius:6px;font-size:.85rem;outline:none" /></div>
+          </div>
+          <button onclick="createCoupon()" style="padding:8px 20px;background:var(--blue);color:var(--white);border:none;border-radius:7px;font-size:.85rem;font-weight:700;cursor:pointer">Create Coupon</button>
+        </div>
+        <table>
+          <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Used</th><th>Valid Until</th><th>Status</th></tr></thead>
+          <tbody id="couponsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Payments / Reviews / etc sections -->
+    <div id="section-payments" style="display:none">
+      <div class="card full-width">
+        <div class="card-header"><div class="card-title">💰 Payments</div></div>
+        <p style="color:var(--gray-5);text-align:center;padding:40px">Payment records loaded from API — connect backend to view</p>
+      </div>
+    </div>
+    <div id="section-reviews" style="display:none">
+      <div class="card full-width">
+        <div class="card-header"><div class="card-title">⭐ Reviews</div></div>
+        <p style="color:var(--gray-5);text-align:center;padding:40px">Reviews loaded from API — connect backend to view</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('admin_token');
+// Note: Admin login page not shown here but follows same pattern
+
+async function apiFetch(path, opts={}) {
+  const headers = token ? {'Authorization':`Bearer ${token}`,'Content-Type':'application/json'} : {'Content-Type':'application/json'};
+  return fetch(API + path, {...opts, headers:{...headers,...(opts.headers||{})}});
+}
+
+const SAMPLE = {
+  users:[
+    {id:1,name:'Priya Sharma',email:'priya@example.com',mobile:'9876543210',is_active:true,created_at:'2024-01-15'},
+    {id:2,name:'Aakash Verma',email:'aakash@example.com',mobile:'9123456789',is_active:true,created_at:'2024-02-20'},
+    {id:3,name:'Neha Patil',email:'neha@example.com',mobile:'9988776655',is_active:false,created_at:'2024-03-10'},
+  ],
+  providers:[
+    {id:1,name:'Raj Kumar',email:'raj@example.com',avg_rating:4.9,total_jobs:312,is_verified:true,is_active:true},
+    {id:2,name:'Mohan Singh',email:'mohan@example.com',avg_rating:4.7,total_jobs:198,is_verified:false,is_active:true},
+    {id:3,name:'Sunita Devi',email:'sunita@example.com',avg_rating:4.5,total_jobs:87,is_verified:false,is_active:true},
+  ],
+  bookings:[
+    {id:101,user_id:1,provider_id:1,status:'completed',final_amount:299,booking_date:'2024-06-26'},
+    {id:102,user_id:2,provider_id:2,status:'pending',final_amount:499,booking_date:'2024-06-27'},
+    {id:103,user_id:3,provider_id:1,status:'cancelled',final_amount:199,booking_date:'2024-06-25'},
+  ],
+  complaints:[
+    {id:1,booking_id:101,raised_by:'user',type:'overcharging',status:'open',created_at:'2024-06-27'},
+    {id:2,booking_id:102,raised_by:'provider',type:'fraud',status:'in_review',created_at:'2024-06-26'},
+  ],
+  coupons:[
+    {code:'WELCOME50',discount_type:'flat',discount_value:50,used_count:23,valid_until:'2024-12-31',is_active:true},
+    {code:'SAVE10',discount_type:'percent',discount_value:10,used_count:67,valid_until:'2024-12-31',is_active:true},
+    {code:'NEWUSER100',discount_type:'flat',discount_value:100,used_count:11,valid_until:'2024-12-31',is_active:true},
+  ],
+};
+
+async function loadDashboard() {
+  try {
+    const res = await apiFetch('/api/admin/dashboard');
+    const d = res.ok ? await res.json() : {total_users:1284,total_providers:312,total_bookings:4821,total_revenue:142800,week_revenue:18600,pending_verifications:7,open_complaints:3,pending_bookings:24};
+    document.getElementById('statUsers').textContent = d.total_users?.toLocaleString();
+    document.getElementById('statProviders').textContent = d.total_providers?.toLocaleString();
+    document.getElementById('statBookings').textContent = d.total_bookings?.toLocaleString();
+    document.getElementById('statRevenue').textContent = `₹${(d.total_revenue/1000).toFixed(0)}K`;
+    document.getElementById('statWeekRev').textContent = `₹${(d.week_revenue/1000).toFixed(1)}K this week`;
+    document.getElementById('statWeekRevBig').textContent = `₹${(d.week_revenue/1000).toFixed(1)}K`;
+    document.getElementById('statPendingVerif').textContent = `${d.pending_verifications} awaiting verification`;
+    document.getElementById('statPendingBookings').textContent = `${d.pending_bookings} pending`;
+    document.getElementById('statComplaints').textContent = d.open_complaints;
+    document.getElementById('statVerif').textContent = d.pending_verifications;
+  } catch {}
+
+  // Pending verifications list
+  const unverified = SAMPLE.providers.filter(p => !p.is_verified);
+  document.getElementById('pendingVerifList').innerHTML = unverified.length ? unverified.map(p => `
+    <div class="verify-item">
+      <div class="v-avatar">👨‍🔧</div>
+      <div>
+        <div class="v-name">${p.name}</div>
+        <div class="v-role">${p.email}</div>
+      </div>
+      <div class="v-actions">
+        <button class="verify-btn approve" onclick="verifyProvider(${p.id})">✓ Verify</button>
+        <button class="verify-btn reject">✗</button>
+      </div>
+    </div>`).join('') : '<div style="text-align:center;padding:20px;color:var(--gray-5)">✅ All providers verified</div>';
+
+  // Recent bookings
+  document.getElementById('recentBookings').innerHTML = SAMPLE.bookings.map(b => `
+    <tr><td>#${b.id}</td><td>User #${b.user_id}</td>
+    <td><span class="badge ${b.status==='completed'?'badge-green':b.status==='pending'?'badge-yellow':'badge-red'}">${b.status}</span></td>
+    <td>₹${b.final_amount}</td></tr>`).join('');
+
+  // Complaints preview
+  document.getElementById('complaintsPreview').innerHTML = SAMPLE.complaints.map(c => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-2)">
+      <div>
+        <div style="font-size:.85rem;font-weight:600">Booking #${c.booking_id} — ${c.type.replace('_',' ')}</div>
+        <div style="font-size:.75rem;color:var(--gray-5)">By ${c.raised_by} · ${c.created_at}</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="badge ${c.status==='open'?'badge-red':c.status==='in_review'?'badge-yellow':'badge-green'}">${c.status}</span>
+        <button class="action-link" onclick="resolveComplaint(${c.id})">Resolve</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadUsers() {
+  document.getElementById('usersTable').innerHTML = SAMPLE.users.map(u => `
+    <tr>
+      <td>#${u.id}</td>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.email}</td>
+      <td>${u.mobile}</td>
+      <td>${u.created_at}</td>
+      <td><span class="badge ${u.is_active?'badge-green':'badge-red'}">${u.is_active?'Active':'Inactive'}</span></td>
+      <td><button class="action-link ${u.is_active?'danger':''}" onclick="toggleUser(${u.id})">${u.is_active?'Deactivate':'Activate'}</button></td>
+    </tr>`).join('');
+}
+
+function loadProviders() {
+  document.getElementById('providersTable').innerHTML = SAMPLE.providers.map(p => `
+    <tr>
+      <td>#${p.id}</td>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.email}</td>
+      <td>${p.avg_rating}★</td>
+      <td>${p.total_jobs}</td>
+      <td><span class="badge ${p.is_verified?'badge-green':'badge-yellow'}">${p.is_verified?'Verified':'Pending'}</span></td>
+      <td style="display:flex;gap:6px">
+        ${!p.is_verified ? `<button class="action-link" onclick="verifyProvider(${p.id})">Verify</button>` : ''}
+        <button class="action-link danger" onclick="toggleProvider(${p.id})">${p.is_active?'Ban':'Unban'}</button>
+      </td>
+    </tr>`).join('');
+}
+
+function loadBookingsTable() {
+  document.getElementById('bookingsTable').innerHTML = SAMPLE.bookings.map(b => `
+    <tr>
+      <td>#${b.id}</td>
+      <td>User #${b.user_id}</td>
+      <td>Provider #${b.provider_id}</td>
+      <td>${b.booking_date}</td>
+      <td><span class="badge ${b.status==='completed'?'badge-green':b.status==='pending'?'badge-yellow':'badge-red'}">${b.status}</span></td>
+      <td>₹${b.final_amount}</td>
+    </tr>`).join('');
+}
+
+function loadComplaints() {
+  document.getElementById('complaintsTable').innerHTML = SAMPLE.complaints.map(c => `
+    <tr>
+      <td>#${c.id}</td>
+      <td>#${c.booking_id}</td>
+      <td>${c.raised_by}</td>
+      <td>${c.type.replace('_',' ')}</td>
+      <td><span class="badge ${c.status==='open'?'badge-red':c.status==='in_review'?'badge-yellow':'badge-green'}">${c.status}</span></td>
+      <td><button class="action-link" onclick="resolveComplaint(${c.id})">Resolve</button></td>
+    </tr>`).join('');
+}
+
+function loadCategories() {
+  const cats = ['Electrical','Plumber','AC Repair','Fan Repair','Laptop','Cleaning','Painter','Carpenter'];
+  document.getElementById('categoriesList').innerHTML = cats.map(c => `
+    <div style="background:var(--gray-1);border:1.5px solid var(--gray-2);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:.85rem;font-weight:600">${c}</span>
+      <span style="font-size:.75rem;color:var(--gray-5)">Active</span>
+    </div>`).join('');
+}
+
+function loadCoupons() {
+  document.getElementById('couponsTable').innerHTML = SAMPLE.coupons.map(c => `
+    <tr>
+      <td><strong>${c.code}</strong></td>
+      <td>${c.discount_type}</td>
+      <td>${c.discount_type==='flat'?'₹':''}${c.discount_value}${c.discount_type==='percent'?'%':''}</td>
+      <td>${c.used_count}</td>
+      <td>${c.valid_until}</td>
+      <td><span class="badge badge-green">Active</span></td>
+    </tr>`).join('');
+}
+
+async function verifyProvider(id) {
+  try { await apiFetch(`/api/admin/providers/${id}/verify`, {method:'PUT'}); } catch {}
+  const p = SAMPLE.providers.find(p=>p.id===id);
+  if (p) p.is_verified = true;
+  showToast('Provider verified ✓');
+  loadDashboard();
+  loadProviders();
+}
+
+async function resolveComplaint(id) {
+  try { await apiFetch(`/api/admin/complaints/${id}/resolve`, {method:'PUT'}); } catch {}
+  showToast('Complaint resolved ✓');
+}
+
+function toggleUser(id) { showToast('User status updated'); }
+function toggleProvider(id) { showToast('Provider status updated'); }
+
+function showCouponForm() {
+  const f = document.getElementById('couponForm');
+  f.style.display = f.style.display==='none' ? 'block' : 'none';
+}
+
+async function createCoupon() {
+  const code = document.getElementById('cCode').value.toUpperCase();
+  const type = document.getElementById('cType').value;
+  const val  = document.getElementById('cVal').value;
+  const min  = document.getElementById('cMin').value || 0;
+  const max  = document.getElementById('cMax').value || 100;
+  const date = document.getElementById('cDate').value;
+  if (!code||!val||!date) { showToast('Please fill all coupon fields','error'); return; }
+  try {
+    await apiFetch('/api/admin/coupons', {method:'POST',body:JSON.stringify({code,discount_type:type,discount_value:parseFloat(val),min_order:parseFloat(min),max_uses:parseInt(max),valid_until:date})});
+  } catch {}
+  SAMPLE.coupons.push({code,discount_type:type,discount_value:val,used_count:0,valid_until:date,is_active:true});
+  loadCoupons();
+  document.getElementById('couponForm').style.display='none';
+  showToast(`Coupon ${code} created ✓`,'success');
+}
+
+function showSection(name) {
+  document.querySelectorAll('[id^="section-"]').forEach(s=>s.style.display='none');
+  document.getElementById(`section-${name}`).style.display='block';
+  document.getElementById('topbarTitle').textContent = {
+    dashboard:'Dashboard Overview',users:'User Management',providers:'Provider Management',
+    bookings:'Bookings',payments:'Payments',complaints:'Complaints',
+    reviews:'Reviews',categories:'Categories',coupons:'Coupons'
+  }[name];
+  document.querySelectorAll('.sidebar-nav li').forEach(li=>li.classList.remove('active'));
+
+  if (name==='users') loadUsers();
+  if (name==='providers') loadProviders();
+  if (name==='bookings') loadBookingsTable();
+  if (name==='complaints') loadComplaints();
+  if (name==='categories') loadCategories();
+  if (name==='coupons') loadCoupons();
+}
+
+function filterUsers() {
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  document.querySelectorAll('#usersTable tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function showToast(msg, type='success') {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${type==='error'?'#F04438':'#12B76A'};color:white;padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:9999;font-family:Inter,sans-serif;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2)`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+function logout() { localStorage.removeItem('admin_token'); }
+
+loadDashboard();
+</script>
+</body>
+</html>
