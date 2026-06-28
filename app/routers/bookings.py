@@ -6,7 +6,7 @@ from app.models.models import (
     Provider, User
 )
 from app.schemas.schemas import BookingCreate, BookingOut, BookingStatusUpdate
-from needbro.app.routers.auth import get_current_user
+from app.auth.security import get_current_user
 from app.utils.helpers import save_upload
 from datetime import date
 

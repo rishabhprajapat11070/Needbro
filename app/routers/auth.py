@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database.connection import get_db
 from app.models.models import User
 from app.schemas.schemas import UserRegister, UserOut, UserUpdate, Token, LoginRequest
-from needbro.app.routers.auth import hash_password, verify_password, create_access_token, get_current_user
+from app.auth.security import hash_password, verify_password, create_access_token, get_current_user
 from app.utils.helpers import save_upload, generate_referral_code
 import random, string
 

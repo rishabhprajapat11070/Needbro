@@ -7,7 +7,7 @@ from app.models.models import (
     Payment, Review, Complaint, Category, Coupon, Notification
 )
 from app.schemas.schemas import Token, LoginRequest, CategoryCreate, CouponOut
-from needbro.app.routers.auth import verify_password, create_access_token, get_current_admin, hash_password
+from app.auth.security import verify_password, create_access_token, get_current_admin, hash_password
 from pydantic import BaseModel, EmailStr
 from datetime import date, timedelta
 

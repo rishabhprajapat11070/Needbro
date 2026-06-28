@@ -10,7 +10,7 @@ from app.schemas.schemas import (
     PaymentCreate, PaymentOut, ReviewCreate, ReviewOut,
     ComplaintCreate, ComplaintOut, NotificationOut, CouponValidate
 )
-from needbro.app.routers.auth import get_current_user
+from app.auth.security import get_current_user
 from datetime import datetime
 
 router = APIRouter(prefix="/api", tags=["Payments & Reviews"])

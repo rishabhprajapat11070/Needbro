@@ -8,7 +8,7 @@ import os
 load_dotenv()
 
 # Import routers
-from needbro.app.auth.auth     import router as auth_router
+from app.routers.auth import router as auth_router
 from app.routers.provider import router as provider_router
 from app.routers.search   import router as search_router
 from app.routers.bookings import router as bookings_router

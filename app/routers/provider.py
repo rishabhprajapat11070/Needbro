@@ -7,7 +7,7 @@ from app.schemas.schemas import (
     ProviderRegister, ProviderOut, ProviderUpdate,
     Token, LoginRequest, BookingOut, BookingStatusUpdate
 )
-from needbro.app.routers.auth import hash_password, verify_password, create_access_token, get_current_provider
+from app.auth.security import hash_password, verify_password, create_access_token, get_current_provider
 from app.utils.helpers import save_upload
 
 router = APIRouter(prefix="/api/provider", tags=["Provider"])
