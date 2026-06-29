@@ -106,8 +106,8 @@
   <h2>Booking Confirmed!</h2>
   <p>Your professional has been notified and will confirm shortly.<br/>You'll receive updates via notifications.</p>
   <div class="success-actions">
-    <a href="dashboard.html" style="padding:12px 24px;background:var(--blue);color:white;border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">Go to Dashboard</a>
-    <a href="bookings.html" style="padding:12px 24px;background:var(--gray-2);color:var(--gray-9);border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">View My Bookings</a>
+    <a href="/dashboard" style="padding:12px 24px;background:var(--blue);color:white;border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">Go to Dashboard</a>
+    <a href="/bookings" style="padding:12px 24px;background:var(--gray-2);color:var(--gray-9);border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">View My Bookings</a>
   </div>
 </div>
 
@@ -254,7 +254,7 @@
 <script>
 const API = '';
 const token = localStorage.getItem('token');
-if (!token) location.href = 'index.html';
+if (!token) location.href = '/';
 
 const urlParams = new URLSearchParams(location.search);
 let providerId = urlParams.get('provider_id');

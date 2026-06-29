@@ -277,12 +277,12 @@ function renderProvider(p) {
 }
 
 function bookNow() {
-  if (!token) { location.href = 'index.html'; return; }
+  if (!token) { location.href = '/index'; return; }
   location.href = `booking.html?provider_id=${providerId}`;
 }
 
 async function toggleFav() {
-  if (!token) { location.href = 'index.html'; return; }
+  if (!token) { location.href = '/index'; return; }
   try {
     await fetch(API + `/api/favorites/${providerId}`, {
       method:'POST',
@@ -299,7 +299,7 @@ async function toggleFav() {
 }
 
 function openChat() {
-  if (!token) { location.href = 'index.html'; return; }
+  if (!token) { location.href = '/'; return; }
   location.href = `chat.html?provider=${providerId}`;
 }
 

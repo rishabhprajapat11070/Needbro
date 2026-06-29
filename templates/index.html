@@ -645,12 +645,13 @@ async function login() {
       body: JSON.stringify({email, password})
     });
     const data = await res.json();
+    
     if (!res.ok) throw new Error(data.detail || 'Login failed');
     localStorage.setItem('token', data.access_token);
     localStorage.setItem('role', 'user');
     closeModal();
     showToast('Signed in successfully ✓', 'success');
-    setTimeout(() => location.href = 'dashboard.html', 800);
+    setTimeout(() => location.href = '/dashboard', 800);
   } catch(e) { showToast(e.message, 'error'); }
 }
 
@@ -673,7 +674,7 @@ async function register() {
     localStorage.setItem('role', 'user');
     closeModal();
     showToast('Account created! Welcome to NeedBro 🎉', 'success');
-    setTimeout(() => location.href = 'dashboard.html', 1000);
+    setTimeout(() => location.href = '/dashboard', 1000);
   } catch(e) { showToast(e.message, 'error'); }
 }
 
@@ -686,7 +687,7 @@ document.getElementById('searchInput').addEventListener('keydown', e => { if(e.k
 function bookProvider(name) {
   const token = localStorage.getItem('token');
   if (!token) { openModal('login'); return; }
-  location.href = 'booking.html';
+  location.href = '/booking';
 }
 
 // ── Toast ────────────────────────────────────────────────────────
@@ -704,9 +705,10 @@ document.getElementById('authModal').addEventListener('click', function(e) {
 
 // ── Check if already logged in ───────────────────────────────────
 if (localStorage.getItem('token')) {
+  console.log()
   document.querySelector('.nav-cta').innerHTML = `
     <span style="font-size:.85rem;color:var(--gray-5)">Signed in</span>
-    <a href="dashboard.html" class="btn btn-primary">My Dashboard</a>`;
+    <a href="/dashboard" class="btn btn-primary">My Dashboard</a>`;
 }
 </script>
 </body>

@@ -156,12 +156,12 @@ async function login() {
     if (!res.ok) throw new Error(data.detail || 'Login failed');
     localStorage.setItem('provider_token', data.access_token);
     showToast('Signed in! Redirecting…','success');
-    setTimeout(() => location.href = 'provider-dashboard.html', 800);
+    setTimeout(() => location.href = '/provider-dashboard', 800);
   } catch(e) {
     // Demo login
     localStorage.setItem('provider_token', 'demo_provider_token');
     showToast('Signed in! (Demo mode)','success');
-    setTimeout(() => location.href = 'provider-dashboard.html', 800);
+    setTimeout(() => location.href = '/provider-dashboard', 800);
   }
 }
 
@@ -199,7 +199,7 @@ function showToast(msg, type='') {
   setTimeout(() => t.className = 'toast', 3000);
 }
 
-if (localStorage.getItem('provider_token')) location.href = 'provider-dashboard.html';
+if (localStorage.getItem('provider_token')) location.href = '/provider-dashboard';
 </script>
 </body>
 </html>

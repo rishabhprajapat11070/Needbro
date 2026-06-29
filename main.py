@@ -44,7 +44,8 @@ app.add_middleware(
 # ─── Static files ─────────────────────────────────────────────────────────────
 
 os.makedirs("static/uploads", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/templates", StaticFiles(directory="templates", html=True), name="templates")
+app.mount("/static", StaticFiles(directory="static",), name="static")
 
 # ─── Routers ──────────────────────────────────────────────────────────────────
 
@@ -61,6 +62,23 @@ app.include_router(chat_router)
 @app.get("/")
 def root():
     return FileResponse("templates/index.html")
+
+
+@app.get("/dashboard")
+def dashboard():
+    return FileResponse("templates/dashboard.html")
+
+@app.get("/booking")
+def booking():
+    return FileResponse("templates/booking.html")
+
+@app.get("/search")
+def search():
+    return FileResponse("templates/search.html")
+
+@app.get("/provider-dashboard")
+def search():
+    return FileResponse("templates/provider-dashboard.html")
 
 @app.get("/health")
 def health():

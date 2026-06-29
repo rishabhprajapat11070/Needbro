@@ -72,19 +72,20 @@
   </style>
 </head>
 <body>
+  
 
 <!-- Sidebar -->
 <aside class="sidebar">
   <div class="sidebar-logo">Need<span>Bro</span></div>
   <ul class="sidebar-nav">
-    <li class="active"><a href="dashboard.html"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
+    <li class="active"><a href="/dashboard"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
     <li><a href="search.html"><span class="sidebar-icon">🔍</span>Find Service</a></li>
     <li><a href="bookings.html"><span class="sidebar-icon">📋</span>My Bookings</a></li>
     <li><a href="favorites.html"><span class="sidebar-icon">❤️</span>Favorites</a></li>
     <li><a href="chat.html"><span class="sidebar-icon">💬</span>Messages</a></li>
     <li><a href="profile.html"><span class="sidebar-icon">👤</span>Profile</a></li>
     <div class="sidebar-bottom">
-      <li><a href="index.html" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
+      <li><a href="/" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
     </div>
   </ul>
 </aside>
@@ -170,13 +171,13 @@
     </div>
   </div>
 </main>
-
 <script>
 const API = '';
 const token = localStorage.getItem('token');
-if (!token) location.href = 'index.html';
+if (!token) location.href = '/';
 
 async function apiFetch(path, opts={}) {
+  console.log(API,path)
   return fetch(API + path, {
     ...opts,
     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{}) }
@@ -186,13 +187,16 @@ async function apiFetch(path, opts={}) {
 async function loadProfile() {
   try {
     const res = await apiFetch('/api/auth/me');
-    if (!res.ok) throw new Error();
+    if (res.ok) throw new Error();
     const u = await res.json();
     document.getElementById('userName').textContent = u.name;
     document.getElementById('userEmail').textContent = u.email;
     document.getElementById('avatarInitial').textContent = u.name.charAt(0).toUpperCase();
     document.getElementById('walletBalance').textContent = `₹${parseFloat(u.wallet_balance).toFixed(0)}`;
-  } catch { logout(); }
+  } catch(e) {
+    console.log(e ,"this is an error we catch")
+    alert("")
+    logout(); }
 }
 
 async function loadBookings() {
@@ -247,7 +251,7 @@ async function loadNotifications() {
 
 function logout() {
   localStorage.clear();
-  location.href = 'index.html';
+  location.href = '/';
 }
 
 loadProfile();

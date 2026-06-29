@@ -89,7 +89,7 @@
     <input type="text" id="searchInput" placeholder="Electrician, Plumber, AC Repair…" />
   </div>
   <button class="btn btn-primary" onclick="doSearch()">Search</button>
-  <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
+  <a href="/dashboard" class="btn btn-outline">Dashboard</a>
 </nav>
 
 <!-- Category Chips -->
@@ -266,7 +266,7 @@ function renderSample(q) {
 }
 
 function bookNow(providerId) {
-  if (!token) { location.href = 'index.html'; return; }
+  if (!token) { location.href = '/index'; return; }
   location.href = `booking.html?provider_id=${providerId}`;
 }
 

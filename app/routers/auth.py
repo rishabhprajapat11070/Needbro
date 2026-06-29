@@ -36,7 +36,7 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
-    token = create_access_token({"sub": user.id, "role": "user"})
+    token = create_access_token({"sub":str(user.id), "role": "user"})
     return {"access_token": token}
 
 
@@ -47,7 +47,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(401, "Invalid email or password")
     if not user.is_active:
         raise HTTPException(403, "Account is deactivated")
-    token = create_access_token({"sub": user.id, "role": "user"})
+    token = create_access_token({"sub": str(user.id), "role": "user"})
     return {"access_token": token}
 
 

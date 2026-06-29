@@ -203,7 +203,7 @@
 <script>
 const API = '';
 const token = localStorage.getItem('provider_token');
-if (!token) location.href = 'provider-login.html';
+if (!token) location.href = '/provider-login';
 
 async function apiFetch(path, opts={}) {
   return fetch(API + path, {
@@ -363,7 +363,7 @@ function setStatusUI(status) {
   document.querySelector(`.avail-btn.${status}`)?.classList.add('active');
 }
 
-function logout() { localStorage.removeItem('provider_token'); location.href = 'index.html'; }
+function logout() { localStorage.removeItem('provider_token'); location.href = '/index'; }
 
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
