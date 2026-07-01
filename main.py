@@ -44,8 +44,8 @@ app.add_middleware(
 # ─── Static files ─────────────────────────────────────────────────────────────
 
 os.makedirs("static/uploads", exist_ok=True)
-app.mount("/templates", StaticFiles(directory="templates", html=True), name="templates")
-app.mount("/static", StaticFiles(directory="static",), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # ─── Routers ──────────────────────────────────────────────────────────────────
 
@@ -64,22 +64,95 @@ def root():
     return FileResponse("templates/index.html")
 
 
-@app.get("/dashboard")
-def dashboard():
-    return FileResponse("templates/dashboard.html")
+@app.get("/admin")
+def admin():
+    return FileResponse("templates/admin.html")
+
 
 @app.get("/booking")
 def booking():
     return FileResponse("templates/booking.html")
 
+
+@app.get("/booking-detail")
+def booking_detail():
+    return FileResponse("templates/booking-detail.html")
+
+
+@app.get("/chat")
+def chat():
+    return FileResponse("templates/chat.html")
+
+
+@app.get("/dashboard")
+def dashboard():
+    return FileResponse("templates/dashboard.html")
+
+
+@app.get("/favorites")
+def favorites():
+    return FileResponse("templates/favorites.html")
+
+
+@app.get("/profile")
+def profile():
+    return FileResponse("templates/profile.html")
+
+
+@app.get("/provider-bookings")
+def provider_bookings():
+    return FileResponse("templates/provider-bookings.html")
+
+
+@app.get("/provider-dashboard")
+def provider_dashboard():
+    return FileResponse("templates/provider-dashboard.html")
+
+
+@app.get("/provider-documents")
+def provider_documents():
+    return FileResponse("templates/provider-documents.html")
+
+
+@app.get("/provider-earnings")
+def provider_earnings():
+    return FileResponse("templates/provider-earnings.html")
+
+
+@app.get("/provider-login")
+def provider_login():
+    return FileResponse("templates/provider-login.html")
+
+
+@app.get("/provider-profile")
+def provider_profile():
+    return FileResponse("templates/provider-profile.html")
+
+
+@app.get("/provider-register")
+def provider_register():
+    return FileResponse("templates/provider-register.html")
+
+
+@app.get("/provider")
+def provider():
+    return FileResponse("templates/provider.html")
+
+
 @app.get("/search")
 def search():
     return FileResponse("templates/search.html")
 
-@app.get("/provider-dashboard")
-def search():
-    return FileResponse("templates/provider-dashboard.html")
+
+@app.get("/track")
+def track():
+    return FileResponse("templates/track.html")
+
 
 @app.get("/health")
 def health():
     return {"status": "ok", "app": "NeedBro"}
+
+
+
+

@@ -83,7 +83,7 @@
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html">Need<span>Bro</span></a>
+  <a class="nav-logo" href="/">Need<span>Bro</span></a>
   <div class="search-bar">
     <span>🔍</span>
     <input type="text" id="searchInput" placeholder="Electrician, Plumber, AC Repair…" />
@@ -228,7 +228,7 @@ function renderResults(providers, total) {
 function providerCard(p) {
   const stars = '★'.repeat(Math.round(p.avg_rating||0)) + '☆'.repeat(5-Math.round(p.avg_rating||0));
   return `
-    <div class="provider-card" onclick="location.href='provider.html?id=${p.id}'">
+    <div class="provider-card" onclick="location.href='/provider?id=${p.id}'">
       <div class="provider-avatar">${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '👨‍🔧'}</div>
       <div class="provider-info">
         <div class="provider-name">${p.name}</div>
@@ -266,8 +266,8 @@ function renderSample(q) {
 }
 
 function bookNow(providerId) {
-  if (!token) { location.href = '/index'; return; }
-  location.href = `booking.html?provider_id=${providerId}`;
+  if (!token) { location.href = '/'; return; }
+  location.href = `/booking?provider_id=${providerId}`;
 }
 
 function doSearch() { currentQuery = document.getElementById('searchInput').value; search(); }

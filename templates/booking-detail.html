@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Details — NeedBro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12);--radius:14px}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);min-height:100vh}
+    nav{background:var(--white);border-bottom:1px solid var(--gray-2);padding:0 5%;display:flex;align-items:center;gap:16px;height:60px}
+    .back-btn{color:var(--gray-5);text-decoration:none;font-size:.88rem;font-weight:500}
+    .back-btn:hover{color:var(--blue)}
+    .nav-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700}
+    .page{max-width:880px;margin:0 auto;padding:28px 20px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+    .card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:var(--radius);padding:22px;margin-bottom:16px}
+    .card-title{font-family:'Sora',sans-serif;font-size:.98rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+    /* Header card */
+    .header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .booking-id{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800}
+    .status-badge{padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700}
+    .status-pending{background:#FFF3CD;color:#856404}
+    .status-accepted,.status-coming,.status-reached{background:#DBEAFE;color:#1D4ED8}
+    .status-working{background:#FEF3C7;color:#92400E}
+    .status-completed{background:#D1FAE5;color:#065F46}
+    .status-cancelled,.status-rejected{background:#FEE2E2;color:#991B1B}
+    .booking-sub{color:var(--gray-5);font-size:.85rem}
+    /* Timeline */
+    .timeline{position:relative;padding-left:28px}
+    .timeline::before{content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--gray-2)}
+    .t-item{position:relative;padding-bottom:22px}
+    .t-item:last-child{padding-bottom:0}
+    .t-dot{position:absolute;left:-28px;top:2px;width:20px;height:20px;border-radius:50%;background:var(--gray-2);display:flex;align-items:center;justify-content:center;font-size:.65rem;border:3px solid var(--white)}
+    .t-item.done .t-dot{background:var(--green);color:var(--white)}
+    .t-item.current .t-dot{background:var(--blue);color:var(--white);box-shadow:0 0 0 4px var(--sky)}
+    .t-title{font-weight:700;font-size:.88rem}
+    .t-item.done .t-title,.t-item.current .t-title{color:var(--gray-9)}
+    .t-item:not(.done):not(.current) .t-title{color:var(--gray-5)}
+    .t-time{font-size:.76rem;color:var(--gray-5);margin-top:2px}
+    /* Info rows */
+    .info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-2);font-size:.86rem}
+    .info-row:last-child{border-bottom:none}
+    .info-row span:first-child{color:var(--gray-5)}
+    .info-row span:last-child{font-weight:600;text-align:right}
+    /* Problem image */
+    .problem-img{width:100%;border-radius:10px;margin-top:10px}
+    /* Provider card */
+    .provider-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .provider-avatar{width:50px;height:50px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+    .provider-name{font-weight:700;font-size:.92rem}
+    .provider-role{font-size:.78rem;color:var(--gray-5)}
+    .action-btn{width:100%;padding:11px;border-radius:10px;font-size:.86rem;font-weight:700;cursor:pointer;border:none;margin-bottom:8px;transition:all .2s}
+    .btn-primary{background:var(--blue);color:var(--white)}
+    .btn-primary:hover{background:#0D4FCC}
+    .btn-outline{background:var(--white);border:1.5px solid var(--gray-2);color:var(--gray-9)}
+    .btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+    .btn-danger{background:#FEE2E2;color:var(--red)}
+    .btn-danger:hover{background:#FECACA}
+    /* Payment summary */
+    .pay-row{display:flex;justify-content:space-between;font-size:.86rem;margin-bottom:8px;color:var(--gray-5)}
+    .pay-row strong{color:var(--gray-9)}
+    .pay-total{display:flex;justify-content:space-between;font-family:'Sora',sans-serif;font-weight:800;font-size:1.05rem;padding-top:10px;border-top:1px dashed var(--gray-2);margin-top:8px}
+    /* Rating */
+    .star-input{display:flex;gap:6px;margin-bottom:14px;font-size:1.6rem;justify-content:center}
+    .star-input span{cursor:pointer;color:var(--gray-2);transition:color .15s}
+    .star-input span.active{color:var(--amber)}
+    .review-input{width:100%;padding:10px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:.85rem;font-family:'Inter',sans-serif;outline:none;resize:vertical;min-height:70px;margin-bottom:12px}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{background:var(--green)}
+    .toast.error{background:var(--red)}
+    @media(max-width:700px){.page{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="back-btn" href="/booking">← Back to Bookings</a>
+  <div class="nav-title">Booking Details</div>
+</nav>
+
+<div class="page">
+  <!-- Left -->
+  <div>
+    <!-- Header -->
+    <div class="card">
+      <div class="header-row">
+        <div class="booking-id" id="bId">Booking #—</div>
+        <span class="status-badge" id="statusBadge">—</span>
+      </div>
+      <div class="booking-sub" id="bSub">—</div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="card">
+      <div class="card-title">📍 Status Timeline</div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <!-- Problem Description -->
+    <div class="card">
+      <div class="card-title">📝 Problem Description</div>
+      <p style="font-size:.86rem;color:var(--gray-5);line-height:1.7" id="problemDesc">No description provided.</p>
+      <img class="problem-img" id="problemImg" style="display:none" />
+    </div>
+
+    <!-- Booking Info -->
+    <div class="card">
+      <div class="card-title">ℹ️ Booking Information</div>
+      <div class="info-row"><span>Service</span><span id="infoService">—</span></div>
+      <div class="info-row"><span>Date & Time</span><span id="infoDate">—</span></div>
+      <div class="info-row"><span>Address</span><span id="infoAddress">—</span></div>
+      <div class="info-row"><span>Type</span><span id="infoType">—</span></div>
+      <div class="info-row"><span>Booked on</span><span id="infoBooked">—</span></div>
+    </div>
+
+    <!-- Review (only if completed) -->
+    <div class="card" id="reviewCard" style="display:none">
+      <div class="card-title">⭐ Rate Your Experience</div>
+      <div class="star-input" id="starInput">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <textarea class="review-input" id="reviewText" placeholder="Tell us about your experience…"></textarea>
+      <button class="action-btn btn-primary" onclick="submitReview()">Submit Review</button>
+    </div>
+  </div>
+
+  <!-- Right -->
+  <div>
+    <!-- Provider -->
+    <div class="card">
+      <div class="card-title">🔧 Service Provider</div>
+      <div class="provider-row">
+        <div class="provider-avatar">👨‍🔧</div>
+        <div>
+          <div class="provider-name" id="providerName">Raj Kumar</div>
+          <div class="provider-role">⭐ 4.9 · Electrician</div>
+        </div>
+      </div>
+      <button class="action-btn btn-primary" onclick="openChat()">💬 Message Provider</button>
+      <button class="action-btn btn-outline" onclick="callProvider()">📞 Call Provider</button>
+      <button class="action-btn btn-outline" id="trackBtn" onclick="location.href='/track?id='+bookingId" style="display:none">📍 Track Live Location</button>
+    </div>
+
+    <!-- Payment -->
+    <div class="card">
+      <div class="card-title">💰 Payment Summary</div>
+      <div class="pay-row"><span>Base Amount</span><strong id="payBase">₹0</strong></div>
+      <div class="pay-row" id="payEmergencyRow" style="display:none"><span>Emergency Surcharge</span><strong id="payEmergency" style="color:var(--red)">₹0</strong></div>
+      <div class="pay-row" id="payDiscountRow" style="display:none"><span>Coupon Discount</span><strong id="payDiscount" style="color:var(--green)">-₹0</strong></div>
+      <div class="pay-total"><span>Total</span><span id="payTotal" style="color:var(--blue)">₹0</span></div>
+      <button class="action-btn btn-primary" id="payBtn" style="margin-top:14px;display:none" onclick="makePayment()">💳 Pay Now</button>
+      <div id="paidBadge" style="display:none;text-align:center;padding:10px;background:#D1FAE5;color:#065F46;border-radius:8px;font-size:.82rem;font-weight:700;margin-top:14px">✅ Payment Completed</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card" id="actionsCard">
+      <div class="card-title">⚙️ Actions</div>
+      <button class="action-btn btn-danger" id="cancelBtn" onclick="cancelBooking()">Cancel Booking</button>
+      <button class="action-btn btn-outline" onclick="raiseComplaint()">🚨 Raise a Complaint</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('token');
+if (!token) location.href = '/';
+
+const bookingId = new URLSearchParams(location.search).get('id') || 101;
+let selectedRating = 0;
+let bookingData = null;
+
+async function apiFetch(path, opts={}) {
+  return fetch(API + path, {
+    ...opts,
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{}) }
+  });
+}
+
+const STATUS_FLOW = ['pending','accepted','coming','reached','working','completed'];
+const STATUS_LABELS = {pending:'Booking Placed',accepted:'Accepted by Provider',coming:'Provider On The Way',reached:'Provider Reached',working:'Service In Progress',completed:'Service Completed'};
+
+async function loadBooking() {
+  try {
+    const res = await apiFetch(`/api/booking/${bookingId}`);
+    if (!res.ok) throw new Error();
+    bookingData = await res.json();
+  } catch {
+    bookingData = {
+      id: bookingId, status: 'working', booking_date:'2024-06-26', booking_time:'14:00:00',
+      address:'Sitabuldi, Nagpur, Maharashtra - 440012', problem_description:'AC not cooling properly, making a rattling noise when turned on.',
+      is_emergency:false, base_amount:599, discount_amount:50, final_amount:549, created_at:'2024-06-25T08:00:00', service_id:3
+    };
+  }
+  render(bookingData);
+}
+
+function render(b) {
+  document.getElementById('bId').textContent = `Booking #${b.id}`;
+  document.getElementById('statusBadge').textContent = b.status.replace('_',' ');
+  document.getElementById('statusBadge').className = `status-badge status-${b.status}`;
+  document.getElementById('bSub').textContent = `${b.booking_date} at ${b.booking_time?.slice(0,5)} · ${b.address}`;
+
+  document.getElementById('infoService').textContent = `Service #${b.service_id}`;
+  document.getElementById('infoDate').textContent = `${b.booking_date}, ${b.booking_time?.slice(0,5)}`;
+  document.getElementById('infoAddress').textContent = b.address;
+  document.getElementById('infoType').textContent = b.is_emergency ? '🚨 Emergency' : 'Standard';
+  document.getElementById('infoBooked').textContent = new Date(b.created_at).toLocaleString('en-IN');
+
+  document.getElementById('problemDesc').textContent = b.problem_description || 'No description provided.';
+  if (b.problem_image) {
+    document.getElementById('problemImg').src = b.problem_image;
+    document.getElementById('problemImg').style.display = 'block';
+  }
+
+  // Payment
+  document.getElementById('payBase').textContent = `₹${b.base_amount}`;
+  if (b.is_emergency) {
+    document.getElementById('payEmergencyRow').style.display = 'flex';
+    document.getElementById('payEmergency').textContent = `+₹${(b.base_amount*0.5).toFixed(0)}`;
+  }
+  if (b.discount_amount > 0) {
+    document.getElementById('payDiscountRow').style.display = 'flex';
+    document.getElementById('payDiscount').textContent = `-₹${b.discount_amount}`;
+  }
+  document.getElementById('payTotal').textContent = `₹${b.final_amount}`;
+
+  // Timeline
+  renderTimeline(b.status);
+
+  // Track button
+  if (['coming','reached','working'].includes(b.status)) {
+    document.getElementById('trackBtn').style.display = 'block';
+  }
+
+  // Payment / Review state
+  if (b.status === 'completed') {
+    document.getElementById('payBtn').style.display = 'block';
+    document.getElementById('reviewCard').style.display = 'block';
+  }
+  if (['cancelled','rejected'].includes(b.status)) {
+    document.getElementById('actionsCard').style.display = 'none';
+  }
+  if (!['pending','accepted'].includes(b.status)) {
+    document.getElementById('cancelBtn').style.display = 'none';
+  }
+}
+
+function renderTimeline(currentStatus) {
+  if (['cancelled','rejected'].includes(currentStatus)) {
+    document.getElementById('timeline').innerHTML = `
+      <div class="t-item done">
+        <div class="t-dot">✕</div>
+        <div class="t-title">Booking ${currentStatus === 'cancelled' ? 'Cancelled' : 'Rejected'}</div>
+        <div class="t-time">This booking was ${currentStatus}</div>
+      </div>`;
+    return;
+  }
+  const currentIdx = STATUS_FLOW.indexOf(currentStatus);
+  document.getElementById('timeline').innerHTML = STATUS_FLOW.map((s,i) => {
+    const cls = i < currentIdx ? 'done' : i === currentIdx ? 'current' : '';
+    const dotContent = i < currentIdx ? '✓' : i === currentIdx ? '●' : '';
+    return `
+      <div class="t-item ${cls}">
+        <div class="t-dot">${dotContent}</div>
+        <div class="t-title">${STATUS_LABELS[s]}</div>
+        ${cls ? `<div class="t-time">${cls === 'current' ? 'In progress' : 'Completed'}</div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+// Star rating
+document.querySelectorAll('#starInput span').forEach(star => {
+  star.addEventListener('click', () => {
+    selectedRating = parseInt(star.dataset.v);
+    document.querySelectorAll('#starInput span').forEach(s => {
+      s.classList.toggle('active', parseInt(s.dataset.v) <= selectedRating);
+    });
+  });
+});
+
+async function submitReview() {
+  if (!selectedRating) { showToast('Please select a rating','error'); return; }
+  const comment = document.getElementById('reviewText').value.trim();
+  try {
+    const res = await apiFetch('/api/reviews', {
+      method:'POST', body: JSON.stringify({booking_id: parseInt(bookingId), rating: selectedRating, comment})
+    });
+    if (!res.ok) throw new Error();
+  } catch {}
+  showToast('Thank you for your review! ⭐','success');
+}
+
+async function makePayment() {
+  try {
+    const res = await apiFetch('/api/payments', {
+      method:'POST', body: JSON.stringify({booking_id: parseInt(bookingId), payment_method:'upi'})
+    });
+    if (!res.ok) throw new Error();
+  } catch {}
+  document.getElementById('payBtn').style.display = 'none';
+  document.getElementById('paidBadge').style.display = 'block';
+  showToast('Payment successful ✓','success');
+}
+
+async function cancelBooking() {
+  if (!confirm('Are you sure you want to cancel this booking?')) return;
+  try {
+    await apiFetch(`/api/booking/${bookingId}/cancel`, {method:'PUT'});
+  } catch {}
+  showToast('Booking cancelled','error');
+  setTimeout(() => location.href = '/booking', 1200);
+}
+
+function raiseComplaint() {
+  const type = prompt('Issue type: late_arrival, fraud, bad_work, overcharging, other');
+  if (!type) return;
+  const desc = prompt('Describe the issue:');
+  apiFetch('/api/complaints', { method:'POST', body: JSON.stringify({booking_id: parseInt(bookingId), type, description: desc}) })
+    .catch(() => {});
+  showToast('Complaint submitted. Our team will review it shortly.','success');
+}
+
+function openChat() { location.href = `/chat?booking=${bookingId}`; }
+function callProvider() { showToast('Calling feature coming soon 📞'); }
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+loadBooking();
+</script>
+</body>
+</html>

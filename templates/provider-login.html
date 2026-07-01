@@ -184,11 +184,11 @@ async function register() {
     if (!res.ok) throw new Error(data.detail || 'Registration failed');
     localStorage.setItem('provider_token', data.access_token);
     showToast('Account created! Welcome to NeedBro 🎉','success');
-    setTimeout(() => location.href = 'provider-dashboard.html', 1000);
+    setTimeout(() => location.href = '/provider-dashboard', 1000);
   } catch(e) {
     localStorage.setItem('provider_token', 'demo_provider_token');
     showToast('Account created! (Demo mode) 🎉','success');
-    setTimeout(() => location.href = 'provider-dashboard.html', 1000);
+    setTimeout(() => location.href = '/provider-dashboard', 1000);
   }
 }
 

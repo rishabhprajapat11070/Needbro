@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bookings — NeedBro Provider</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12)}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);display:flex;min-height:100vh}
+    .sidebar{width:240px;background:var(--navy);min-height:100vh;padding:24px 16px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+    .sidebar-logo{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:8px;padding:0 8px}
+    .sidebar-logo span{color:var(--amber)}
+    .sidebar-role{font-size:.72rem;color:#4A6A9A;padding:0 8px;margin-bottom:28px}
+    .sidebar-nav{list-style:none;display:flex;flex-direction:column;gap:4px}
+    .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;text-decoration:none;color:#7A9CC4;font-size:.88rem;font-weight:500;transition:all .2s}
+    .sidebar-nav a:hover,.sidebar-nav .active a{background:rgba(26,107,255,.15);color:var(--white)}
+    .sidebar-nav .active a{background:var(--blue);color:var(--white)}
+    .sidebar-icon{font-size:1rem;width:20px;text-align:center}
+    .sidebar-bottom{margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)}
+    .main{flex:1;padding:28px;overflow-y:auto}
+    .page-header{margin-bottom:22px}
+    .page-header h1{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:4px}
+    .page-header p{color:var(--gray-5);font-size:.9rem}
+    .tabs{display:flex;gap:4px;background:var(--white);border:1.5px solid var(--gray-2);border-radius:10px;padding:4px;margin-bottom:20px;max-width:fit-content;flex-wrap:wrap}
+    .tab{padding:8px 16px;border-radius:7px;font-size:.83rem;font-weight:600;cursor:pointer;color:var(--gray-5);transition:all .2s}
+    .tab.active{background:var(--blue);color:var(--white)}
+    .booking-list{display:flex;flex-direction:column;gap:12px}
+    .booking-card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:12px;padding:18px;display:flex;align-items:center;gap:16px}
+    .booking-card.urgent{border-color:#FCA5A5;background:#FFFAFA}
+    .b-avatar{width:48px;height:48px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:1.1rem;flex-shrink:0}
+    .b-info{flex:1}
+    .b-user{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:8px}
+    .b-service{font-size:.8rem;color:var(--gray-5);margin-top:2px}
+    .b-meta{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}
+    .b-meta span{font-size:.76rem;color:var(--gray-5)}
+    .b-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+    .b-amount{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;color:var(--green)}
+    .status-badge{padding:4px 12px;border-radius:20px;font-size:.74rem;font-weight:700;white-space:nowrap}
+    .status-pending{background:#FFF3CD;color:#856404}
+    .status-accepted,.status-coming,.status-reached{background:#DBEAFE;color:#1D4ED8}
+    .status-working{background:#FEF3C7;color:#92400E}
+    .status-completed{background:#D1FAE5;color:#065F46}
+    .status-cancelled,.status-rejected{background:#FEE2E2;color:#991B1B}
+    .action-btns{display:flex;gap:6px}
+    .action-btn{padding:7px 14px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+    .accept-btn{background:var(--green);color:var(--white)}
+    .accept-btn:hover{background:#0D9A57}
+    .reject-btn{background:#FEE2E2;color:var(--red)}
+    .reject-btn:hover{background:#FECACA}
+    select.status-sel{border:1.5px solid var(--gray-2);border-radius:6px;padding:6px 10px;font-size:.78rem;font-family:'Inter',sans-serif;outline:none}
+    .empty-state{text-align:center;padding:60px;background:var(--white);border-radius:14px;border:1.5px solid var(--gray-2)}
+    .empty-state .emoji{font-size:3.5rem;margin-bottom:14px}
+    .empty-state h3{font-family:'Sora',sans-serif;margin-bottom:8px}
+    .empty-state p{color:var(--gray-5);font-size:.9rem}
+    @media(max-width:900px){.sidebar{display:none}.main{padding:16px}.booking-card{flex-direction:column;align-items:flex-start}.b-right{width:100%;justify-content:space-between}}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Need<span>Bro</span></div>
+  <div class="sidebar-role">Provider Dashboard</div>
+  <ul class="sidebar-nav">
+    <li><a href="/provider-dashboard"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
+    <li class="active"><a href="/provider-bookings"><span class="sidebar-icon">📋</span>Bookings</a></li>
+    <li><a href="/provider-earnings"><span class="sidebar-icon">💰</span>Earnings</a></li>
+    <li><a href="/chat"><span class="sidebar-icon">💬</span>Messages</a></li>
+    <li><a href="/provider-profile"><span class="sidebar-icon">👤</span>My Profile</a></li>
+    <li><a href="/provider-documents"><span class="sidebar-icon">📄</span>Documents</a></li>
+    <div class="sidebar-bottom">
+      <li><a href="/" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
+    </div>
+  </ul>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <h1>My Bookings</h1>
+    <p>Manage all your service requests in one place</p>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-status="">All</div>
+    <div class="tab" data-status="pending">New Requests</div>
+    <div class="tab" data-status="active">Active</div>
+    <div class="tab" data-status="completed">Completed</div>
+    <div class="tab" data-status="cancelled">Cancelled</div>
+  </div>
+
+  <div class="booking-list" id="bookingList">
+    <div style="text-align:center;padding:40px;color:var(--gray-5)">⏳ Loading…</div>
+  </div>
+</main>
+
+<script>
+const API = '';
+const token = localStorage.getItem('provider_token');
+if (!token) location.href = '/provider-login';
+
+let allBookings = [];
+let activeFilter = '';
+
+async function apiFetch(path, opts={}) {
+  return fetch(API + path, {
+    ...opts,
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{}) }
+  });
+}
+
+const SAMPLE = [
+  {id:101,user_id:1,user_name:'Priya Sharma',service_id:1,booking_date:'2024-06-27',booking_time:'10:00:00',address:'Dharampeth, Nagpur',status:'pending',final_amount:299,is_emergency:false},
+  {id:102,user_id:2,user_name:'Aakash Verma',service_id:1,booking_date:'2024-06-27',booking_time:'14:00:00',address:'Sitabuldi, Nagpur',status:'pending',final_amount:499,is_emergency:true},
+  {id:98,user_id:3,user_name:'Rahul Mehta',service_id:1,booking_date:'2024-06-27',booking_time:'09:00:00',address:'Ramdaspeth, Nagpur',status:'coming',final_amount:299,is_emergency:false},
+  {id:99,user_id:4,user_name:'Neha Patil',service_id:3,booking_date:'2024-06-27',booking_time:'11:30:00',address:'Laxmi Nagar, Nagpur',status:'working',final_amount:599,is_emergency:false},
+  {id:95,user_id:5,user_name:'Vikram Rao',service_id:1,booking_date:'2024-06-20',booking_time:'15:00:00',address:'Civil Lines, Nagpur',status:'completed',final_amount:299,is_emergency:false},
+  {id:90,user_id:6,user_name:'Anita Joshi',service_id:1,booking_date:'2024-06-15',booking_time:'10:00:00',address:'Wardha Road, Nagpur',status:'cancelled',final_amount:199,is_emergency:false},
+];
+
+async function loadBookings() {
+  try {
+    const res = await apiFetch('/api/provider/booking');
+    if (!res.ok) throw new Error();
+    allBookings = await res.json();
+  } catch {
+    allBookings = SAMPLE;
+  }
+  render();
+}
+
+function render() {
+  let list = allBookings;
+  if (activeFilter === 'active') {
+    list = list.filter(b => ['accepted','coming','reached','working'].includes(b.status));
+  } else if (activeFilter) {
+    list = list.filter(b => b.status === activeFilter);
+  }
+
+  if (!list.length) {
+    document.getElementById('bookingList').innerHTML = `
+      <div class="empty-state">
+        <div class="emoji">📋</div>
+        <h3>No bookings here</h3>
+        <p>Nothing to show in this category right now.</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('bookingList').innerHTML = list.map(b => `
+    <div class="booking-card ${b.is_emergency ? 'urgent' : ''}" id="booking-${b.id}">
+      <div class="b-avatar">${(b.user_name||'U')[0]}</div>
+      <div class="b-info">
+        <div class="b-user">${b.user_name || 'Customer #'+b.user_id} ${b.is_emergency ? '<span style="background:#FEE2E2;color:#B91C1C;padding:2px 7px;border-radius:4px;font-size:.66rem;font-weight:700">🚨 EMERGENCY</span>' : ''}</div>
+        <div class="b-service">Service #${b.service_id} · Booking #${b.id}</div>
+        <div class="b-meta">
+          <span>📅 ${b.booking_date} · ${b.booking_time?.slice(0,5)}</span>
+          <span>📍 ${b.address}</span>
+        </div>
+      </div>
+      <div class="b-right">
+        <div class="b-amount">₹${b.final_amount}</div>
+        ${renderActions(b)}
+      </div>
+    </div>`).join('');
+}
+
+function renderActions(b) {
+  if (b.status === 'pending') {
+    return `
+      <div class="action-btns">
+        <button class="action-btn accept-btn" onclick="updateStatus(${b.id},'accepted')">✓ Accept</button>
+        <button class="action-btn reject-btn" onclick="updateStatus(${b.id},'rejected')">✗ Reject</button>
+      </div>`;
+  }
+  if (['accepted','coming','reached','working'].includes(b.status)) {
+    return `
+      <select class="status-sel" onchange="updateStatus(${b.id},this.value)">
+        <option ${b.status==='accepted'?'selected':''} value="accepted">Accepted</option>
+        <option ${b.status==='coming'?'selected':''} value="coming">On the way</option>
+        <option ${b.status==='reached'?'selected':''} value="reached">Reached</option>
+        <option ${b.status==='working'?'selected':''} value="working">Working</option>
+        <option value="completed">Mark Completed</option>
+      </select>`;
+  }
+  return `<span class="status-badge status-${b.status}">${b.status}</span>`;
+}
+
+async function updateStatus(bookingId, status) {
+  try {
+    await apiFetch(`/api/provider/booking/${bookingId}/status`, { method:'PUT', body: JSON.stringify({status}) });
+  } catch {}
+  const b = allBookings.find(x => x.id === bookingId);
+  if (b) b.status = status;
+  showToast(status === 'accepted' ? '✓ Booking accepted!' : status === 'rejected' ? 'Booking rejected' : `Status: ${status}`, status==='rejected'?'error':'success');
+  render();
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeFilter = tab.dataset.status;
+    render();
+  });
+});
+
+function logout() { localStorage.removeItem('provider_token'); }
+
+function showToast(msg, type='') {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText=`position:fixed;bottom:24px;right:24px;background:${type==='error'?'#F04438':'#0A1628'};color:white;padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:999;font-family:Inter,sans-serif`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+loadBookings();
+</script>
+</body>
+</html>

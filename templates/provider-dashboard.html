@@ -105,14 +105,14 @@
     </div>
   </div>
   <ul class="sidebar-nav">
-    <li class="active"><a href="provider-dashboard.html"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
-    <li><a href="provider-bookings.html"><span class="sidebar-icon">📋</span>Bookings</a></li>
-    <li><a href="provider-earnings.html"><span class="sidebar-icon">💰</span>Earnings</a></li>
-    <li><a href="chat.html"><span class="sidebar-icon">💬</span>Messages</a></li>
-    <li><a href="provider-profile.html"><span class="sidebar-icon">👤</span>My Profile</a></li>
-    <li><a href="provider-documents.html"><span class="sidebar-icon">📄</span>Documents</a></li>
+    <li class="active"><a href="/provider-dashboard"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
+    <li><a href="/provider-bookings"><span class="sidebar-icon">📋</span>Bookings</a></li>
+    <li><a href="/provider-earnings"><span class="sidebar-icon">💰</span>Earnings</a></li>
+    <li><a href="/chat"><span class="sidebar-icon">💬</span>Messages</a></li>
+    <li><a href="/provider-profile"><span class="sidebar-icon">👤</span>My Profile</a></li>
+    <li><a href="/provider-documents"><span class="sidebar-icon">📄</span>Documents</a></li>
     <div class="sidebar-bottom">
-      <li><a href="index.html" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
+      <li><a href="/" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
     </div>
   </ul>
 </aside>
@@ -180,7 +180,7 @@
   <div class="card">
     <div class="card-header">
       <div class="card-title">🔔 New Booking Requests</div>
-      <a href="provider-bookings.html" class="btn-sm">View All</a>
+      <a href="/provider-bookings" class="btn-sm">View All</a>
     </div>
     <div class="booking-list" id="pendingBookings">
       <div style="text-align:center;padding:24px;color:var(--gray-5)">⏳ Loading…</div>
@@ -258,7 +258,7 @@ async function loadEarnings() {
 
 async function loadBookings() {
   try {
-    const res = await apiFetch('/api/provider/bookings?status=pending');
+    const res = await apiFetch('/api/provider/booking?status=pending');
     if (!res.ok) throw new Error();
     const bookings = await res.json();
     renderPending(bookings);
@@ -271,7 +271,7 @@ async function loadBookings() {
 
   // Today's schedule
   try {
-    const res = await apiFetch('/api/provider/bookings?status=accepted');
+    const res = await apiFetch('/api/provider/booking?status=accepted');
     if (!res.ok) throw new Error();
     const bookings = await res.json();
     renderSchedule(bookings);
@@ -338,7 +338,7 @@ function renderSchedule(bookings) {
 
 async function updateStatus(bookingId, status) {
   try {
-    const res = await apiFetch(`/api/provider/bookings/${bookingId}/status`, {
+    const res = await apiFetch(`/api/provider/booking/${bookingId}/status`, {
       method:'PUT', body: JSON.stringify({status})
     });
     if (!res.ok) throw new Error();
@@ -363,7 +363,7 @@ function setStatusUI(status) {
   document.querySelector(`.avail-btn.${status}`)?.classList.add('active');
 }
 
-function logout() { localStorage.removeItem('provider_token'); location.href = '/index'; }
+function logout() { localStorage.removeItem('provider_token'); location.href = '/'; }
 
 function showToast(msg, type='') {
   const t = document.getElementById('toast');

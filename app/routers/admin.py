@@ -132,7 +132,7 @@ def toggle_provider(provider_id: int, db: Session = Depends(get_db),
 
 # ─── Bookings ─────────────────────────────────────────────────────────────────
 
-@router.get("/bookings")
+@router.get("/booking")
 def admin_bookings(status: str = None, page: int = 1, limit: int = 20,
                    db: Session = Depends(get_db), _=Depends(get_current_admin)):
     q = db.query(Booking)

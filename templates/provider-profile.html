@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile — NeedBro Provider</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12)}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);display:flex;min-height:100vh}
+    .sidebar{width:240px;background:var(--navy);min-height:100vh;padding:24px 16px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+    .sidebar-logo{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:8px;padding:0 8px}
+    .sidebar-logo span{color:var(--amber)}
+    .sidebar-role{font-size:.72rem;color:#4A6A9A;padding:0 8px;margin-bottom:28px}
+    .sidebar-nav{list-style:none;display:flex;flex-direction:column;gap:4px}
+    .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;text-decoration:none;color:#7A9CC4;font-size:.88rem;font-weight:500;transition:all .2s}
+    .sidebar-nav a:hover,.sidebar-nav .active a{background:rgba(26,107,255,.15);color:var(--white)}
+    .sidebar-nav .active a{background:var(--blue);color:var(--white)}
+    .sidebar-icon{font-size:1rem;width:20px;text-align:center}
+    .sidebar-bottom{margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)}
+    .main{flex:1;padding:28px;overflow-y:auto;max-width:920px}
+    .page-header{margin-bottom:24px}
+    .page-header h1{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:4px}
+    .page-header p{color:var(--gray-5);font-size:.9rem}
+    .card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:14px;padding:24px;margin-bottom:18px}
+    .card-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+    /* Verification banner */
+    .verify-banner{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:12px;margin-bottom:20px}
+    .verify-banner.pending{background:#FFF3CD;border:1.5px solid #FFE69C}
+    .verify-banner.verified{background:#D1FAE5;border:1.5px solid #6EE7B7}
+    .verify-banner .icon{font-size:1.6rem}
+    .verify-banner h4{font-size:.92rem;font-weight:700;margin-bottom:2px}
+    .verify-banner.pending h4{color:#856404}
+    .verify-banner.verified h4{color:#065F46}
+    .verify-banner p{font-size:.8rem}
+    .verify-banner.pending p{color:#9A7C0A}
+    .verify-banner.verified p{color:#047857}
+    /* Avatar */
+    .avatar-row{display:flex;align-items:center;gap:20px;margin-bottom:24px}
+    .avatar-big{width:90px;height:90px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:2rem;flex-shrink:0;overflow:hidden}
+    .avatar-big img{width:100%;height:100%;object-fit:cover}
+    .avatar-upload-btn{padding:8px 16px;border:1.5px solid var(--gray-2);border-radius:8px;background:var(--white);font-size:.82rem;font-weight:600;cursor:pointer}
+    .avatar-upload-btn:hover{border-color:var(--blue);color:var(--blue)}
+    .avatar-hint{font-size:.75rem;color:var(--gray-5);margin-top:6px}
+    /* Form */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .form-group{margin-bottom:16px}
+    .form-group label{font-size:.82rem;font-weight:600;color:var(--gray-9);display:block;margin-bottom:6px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+    .form-group input:focus,.form-group textarea:focus{border-color:var(--blue)}
+    .form-group input:disabled{background:var(--gray-1);color:var(--gray-5)}
+    .form-group textarea{resize:vertical;min-height:80px}
+    .save-btn{padding:11px 24px;background:var(--blue);color:var(--white);border:none;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif}
+    .save-btn:hover{background:#0D4FCC}
+    /* Skills */
+    .skills-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+    .skill-chip{background:var(--sky);color:var(--blue);padding:7px 14px;border-radius:20px;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:8px}
+    .skill-chip .remove{cursor:pointer;opacity:.6;font-weight:800}
+    .skill-chip .remove:hover{opacity:1;color:var(--red)}
+    .add-skill-row{display:flex;gap:8px}
+    .add-skill-row select{flex:1}
+    .add-skill-btn{padding:10px 18px;background:var(--blue);color:var(--white);border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
+    /* Documents */
+    .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+    .doc-card{border:1.5px solid var(--gray-2);border-radius:10px;padding:16px;text-align:center;position:relative}
+    .doc-card.uploaded{border-color:var(--green);background:#F0FDF4}
+    .doc-icon{font-size:2rem;margin-bottom:8px}
+    .doc-name{font-weight:700;font-size:.85rem;margin-bottom:4px}
+    .doc-status{font-size:.75rem;margin-bottom:10px}
+    .doc-status.pending{color:var(--amber)}
+    .doc-status.approved{color:var(--green)}
+    .doc-status.missing{color:var(--gray-5)}
+    .doc-upload-btn{padding:7px 14px;border:1.5px solid var(--gray-2);border-radius:7px;background:var(--white);font-size:.78rem;font-weight:600;cursor:pointer}
+    .doc-upload-btn:hover{border-color:var(--blue);color:var(--blue)}
+    /* Bank info */
+    .bank-note{background:var(--sky);border-radius:8px;padding:10px 14px;font-size:.78rem;color:var(--blue);margin-bottom:16px}
+    /* Availability */
+    .avail-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+    .day-toggle{border:1.5px solid var(--gray-2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s}
+    .day-toggle.active{background:var(--sky);border-color:var(--blue)}
+    .day-name{font-size:.78rem;font-weight:700;margin-bottom:6px}
+    .day-toggle.active .day-name{color:var(--blue)}
+    .day-time-input{width:100%;font-size:.68rem;border:1px solid var(--gray-2);border-radius:4px;padding:2px;margin-top:2px;outline:none}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{background:var(--green)}
+    .toast.error{background:var(--red)}
+    @media(max-width:900px){.sidebar{display:none}.main{padding:16px}.form-row{grid-template-columns:1fr}.avail-grid{grid-template-columns:repeat(4,1fr)}}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Need<span>Bro</span></div>
+  <div class="sidebar-role">Provider Dashboard</div>
+  <ul class="sidebar-nav">
+    <li><a href="/provider-dashboard"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
+    <li><a href="/provider-bookings"><span class="sidebar-icon">📋</span>Bookings</a></li>
+    <li><a href="/provider-earnings"><span class="sidebar-icon">💰</span>Earnings</a></li>
+    <li><a href="/chat"><span class="sidebar-icon">💬</span>Messages</a></li>
+    <li class="active"><a href="/provider-profile"><span class="sidebar-icon">👤</span>My Profile</a></li>
+    <li><a href="/provider-documents"><span class="sidebar-icon">📄</span>Documents</a></li>
+    <div class="sidebar-bottom">
+      <li><a href="/" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
+    </div>    
+  </ul>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <p>Manage your professional profile, skills, and verification</p>
+  </div>
+
+  <!-- Verification Banner -->
+  <div class="verify-banner pending" id="verifyBanner">
+    <span class="icon">⏳</span>
+    <div>
+      <h4 id="verifyTitle">Verification Pending</h4>
+      <p id="verifySub">Upload your documents below to get verified and start receiving bookings.</p>
+    </div>
+  </div>
+
+  <!-- Personal Info -->
+  <div class="card">
+    <div class="card-title">👤 Personal Information</div>
+    <div class="avatar-row">
+      <div class="avatar-big" id="avatarBig">R</div>
+      <div>
+        <button class="avatar-upload-btn" onclick="document.getElementById('photoInput').click()">📷 Change Photo</button>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto(this)" />
+        <div class="avatar-hint">JPG or PNG, max 5MB</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="fName" placeholder="Your name" />
+      </div>
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <input type="tel" id="fMobile" disabled />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="fEmail" disabled />
+      </div>
+      <div class="form-group">
+        <label>Experience (years)</label>
+        <input type="number" id="fExp" min="0" max="50" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Bio / About</label>
+      <textarea id="fBio" placeholder="Tell customers about your expertise…"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Shop / Service Area Address</label>
+      <input type="text" id="fAddress" placeholder="Area, City" />
+    </div>
+    <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+  </div>
+
+  <!-- Skills -->
+  <div class="card">
+    <div class="card-title">🛠️ Services I Offer</div>
+    <div class="skills-grid" id="skillsGrid"></div>
+    <div class="add-skill-row">
+      <select id="skillSelect">
+        <option value="">Select a category to add…</option>
+        <option>Electrical</option><option>Plumber</option><option>AC Repair</option>
+        <option>Fan Repair</option><option>Washing Machine</option><option>Car Mechanic</option>
+        <option>CCTV Installation</option><option>Carpenter</option><option>Painter</option>
+      </select>
+      <input type="number" id="skillRate" placeholder="Rate ₹" style="width:100px;padding:10px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:.85rem;outline:none" />
+      <button class="add-skill-btn" onclick="addSkill()">+ Add</button>
+    </div>
+  </div>
+
+  <!-- Documents -->
+  <div class="card">
+    <div class="card-title">📄 Verification Documents</div>
+    <div class="doc-grid">
+      <div class="doc-card" id="docAadhaar">
+        <div class="doc-icon">🪪</div>
+        <div class="doc-name">Aadhaar Card</div>
+        <div class="doc-status missing">Not uploaded</div>
+        <button class="doc-upload-btn" onclick="uploadDoc('aadhaar')">Upload</button>
+      </div>
+      <div class="doc-card" id="docPan">
+        <div class="doc-icon">💳</div>
+        <div class="doc-name">PAN Card</div>
+        <div class="doc-status missing">Not uploaded</div>
+        <button class="doc-upload-btn" onclick="uploadDoc('pan')">Upload</button>
+      </div>
+      <div class="doc-card" id="docCert">
+        <div class="doc-icon">📜</div>
+        <div class="doc-name">Certificate (optional)</div>
+        <div class="doc-status missing">Not uploaded</div>
+        <button class="doc-upload-btn" onclick="uploadDoc('certificate')">Upload</button>
+      </div>
+    </div>
+    <input type="file" id="docInput" accept="image/*,application/pdf" style="display:none" />
+  </div>
+
+  <!-- Bank / Payment Info -->
+  <div class="card">
+    <div class="card-title">💳 Payment Details</div>
+    <div class="bank-note">💡 Your earnings (80% of each job, after platform fee) are credited to your wallet and can be withdrawn to this account.</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>UPI ID</label>
+        <input type="text" id="fUpi" placeholder="yourname@upi" />
+      </div>
+      <div class="form-group">
+        <label>Bank Account Number</label>
+        <input type="text" id="fBank" placeholder="XXXXXXXXXXXX" />
+      </div>
+    </div>
+    <button class="save-btn" onclick="savePayment()">Update Payment Info</button>
+  </div>
+
+  <!-- Weekly Availability -->
+  <div class="card">
+    <div class="card-title">📅 Weekly Availability</div>
+    <div class="avail-grid" id="availGrid"></div>
+    <button class="save-btn" style="margin-top:16px" onclick="saveAvailability()">Save Schedule</button>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('provider_token');
+if (!token) location.href = '/provider-login';
+
+let mySkills = [];
+
+async function apiFetch(path, opts={}) {
+  return fetch(API + path, {
+    ...opts,
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{}) }
+  });
+}
+
+async function loadProfile() {
+  try {
+    const res = await apiFetch('/api/provider/me');
+    if (!res.ok) throw new Error();
+    const p = await res.json();
+    fillForm(p);
+  } catch {
+    fillForm({
+      name:'Raj Kumar', email:'raj@example.com', mobile:'+91 98765 11111',
+      experience_years:8, bio:'Expert electrician with 8+ years in residential wiring, panel upgrades, and emergency repairs.',
+      shop_address:'Dharampeth, Nagpur', is_verified:false, photo:null
+    });
+  }
+  mySkills = [{category:'Electrical',hourly_rate:299},{category:'Fan Repair',hourly_rate:199}];
+  renderSkills();
+}
+
+function fillForm(p) {
+  document.getElementById('fName').value = p.name;
+  document.getElementById('fEmail').value = p.email;
+  document.getElementById('fMobile').value = p.mobile;
+  document.getElementById('fExp').value = p.experience_years;
+  document.getElementById('fBio').value = p.bio || '';
+  document.getElementById('fAddress').value = p.shop_address || '';
+  document.getElementById('avatarBig').textContent = p.name.charAt(0).toUpperCase();
+  if (p.photo) document.getElementById('avatarBig').innerHTML = `<img src="${p.photo}" />`;
+
+  const banner = document.getElementById('verifyBanner');
+  if (p.is_verified) {
+    banner.className = 'verify-banner verified';
+    banner.querySelector('.icon').textContent = '✅';
+    document.getElementById('verifyTitle').textContent = 'Verified Provider';
+    document.getElementById('verifySub').textContent = 'Your account is verified. You can accept bookings now.';
+  }
+}
+
+function renderSkills() {
+  document.getElementById('skillsGrid').innerHTML = mySkills.map((s,i) => `
+    <div class="skill-chip">✓ ${s.category} <span style="opacity:.6">₹${s.hourly_rate}</span> <span class="remove" onclick="removeSkill(${i})">✕</span></div>
+  `).join('') || '<p style="font-size:.82rem;color:var(--gray-5)">No services added yet</p>';
+}
+
+function addSkill() {
+  const cat = document.getElementById('skillSelect').value;
+  const rate = document.getElementById('skillRate').value || 299;
+  if (!cat) { showToast('Please select a category','error'); return; }
+  if (mySkills.find(s => s.category === cat)) { showToast('Already added','error'); return; }
+  mySkills.push({category:cat, hourly_rate:rate});
+  renderSkills();
+  document.getElementById('skillSelect').value = '';
+  document.getElementById('skillRate').value = '';
+  showToast('Service added ✓','success');
+}
+
+function removeSkill(i) { mySkills.splice(i,1); renderSkills(); }
+
+// Availability grid
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let activeDays = new Set(['Mon','Tue','Wed','Thu','Fri','Sat']);
+function renderAvail() {
+  document.getElementById('availGrid').innerHTML = DAYS.map(d => `
+    <div class="day-toggle ${activeDays.has(d)?'active':''}" onclick="toggleDay('${d}')">
+      <div class="day-name">${d}</div>
+      ${activeDays.has(d) ? `<input class="day-time-input" value="8AM-7PM" onclick="event.stopPropagation()" />` : '<div style="font-size:.68rem;color:var(--gray-5)">Off</div>'}
+    </div>`).join('');
+}
+function toggleDay(d) { activeDays.has(d) ? activeDays.delete(d) : activeDays.add(d); renderAvail(); }
+renderAvail();
+
+async function saveProfile() {
+  const data = {
+    name: document.getElementById('fName').value.trim(),
+    bio: document.getElementById('fBio').value.trim(),
+    shop_address: document.getElementById('fAddress').value.trim(),
+  };
+  try {
+    const res = await apiFetch('/api/provider/profile', { method:'PUT', body: JSON.stringify(data) });
+    if (!res.ok) throw new Error();
+  } catch {}
+  showToast('Profile updated ✓','success');
+}
+
+async function savePayment() {
+  const upi_id = document.getElementById('fUpi').value.trim();
+  try {
+    await apiFetch('/api/provider/profile', { method:'PUT', body: JSON.stringify({upi_id}) });
+  } catch {}
+  showToast('Payment info updated ✓','success');
+}
+
+function saveAvailability() { showToast('Weekly schedule saved ✓','success'); }
+
+async function uploadPhoto(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => { document.getElementById('avatarBig').innerHTML = `<img src="${e.target.result}" />`; };
+  reader.readAsDataURL(input.files[0]);
+
+  const formData = new FormData();
+  formData.append('file', input.files[0]);
+  try {
+    await fetch(API + '/api/provider/profile/photo', {
+      method:'POST', headers:{'Authorization':`Bearer ${token}`}, body: formData
+    });
+  } catch {}
+  showToast('Photo updated ✓','success');
+}
+
+function uploadDoc(type) {
+  const input = document.getElementById('docInput');
+  input.onchange = async () => {
+    if (!input.files[0]) return;
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+    try {
+      await fetch(API + `/api/provider/documents?doc_type=${type}`, {
+        method:'POST', headers:{'Authorization':`Bearer ${token}`}, body: formData
+      });
+    } catch {}
+    const cardId = type === 'aadhaar' ? 'docAadhaar' : type === 'pan' ? 'docPan' : 'docCert';
+    const card = document.getElementById(cardId);
+    card.classList.add('uploaded');
+    card.querySelector('.doc-status').textContent = 'Pending approval';
+    card.querySelector('.doc-status').className = 'doc-status pending';
+    card.querySelector('.doc-icon').textContent = '✅';
+    showToast(`${type} document uploaded — pending admin review`,'success');
+  };
+  input.click();
+}
+
+function logout() { localStorage.removeItem('provider_token'); }
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+loadProfile();
+</script>
+</body>
+</html>

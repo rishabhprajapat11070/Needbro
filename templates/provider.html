@@ -93,8 +93,8 @@
 <body>
 
 <nav>
-  <a class="back-btn" href="search.html">← Back to Search</a>
-  <a class="nav-logo" href="index.html">Need<span>Bro</span></a>
+  <a class="back-btn" href="/search">← Back to Search</a>
+  <a class="nav-logo" href="/">Need<span>Bro</span></a>
 </nav>
 
 <!-- Hero -->
@@ -277,12 +277,12 @@ function renderProvider(p) {
 }
 
 function bookNow() {
-  if (!token) { location.href = '/index'; return; }
-  location.href = `booking.html?provider_id=${providerId}`;
+  if (!token) { location.href = '/'; return; }
+  location.href = `/booking?provider_id=${providerId}`;
 }
 
 async function toggleFav() {
-  if (!token) { location.href = '/index'; return; }
+  if (!token) { location.href = '/'; return; }
   try {
     await fetch(API + `/api/favorites/${providerId}`, {
       method:'POST',
@@ -300,7 +300,7 @@ async function toggleFav() {
 
 function openChat() {
   if (!token) { location.href = '/'; return; }
-  location.href = `chat.html?provider=${providerId}`;
+  location.href = `/chat?provider=${providerId}`;
 }
 
 loadProvider();

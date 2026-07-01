@@ -79,11 +79,11 @@
   <div class="sidebar-logo">Need<span>Bro</span></div>
   <ul class="sidebar-nav">
     <li class="active"><a href="/dashboard"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
-    <li><a href="search.html"><span class="sidebar-icon">🔍</span>Find Service</a></li>
-    <li><a href="bookings.html"><span class="sidebar-icon">📋</span>My Bookings</a></li>
-    <li><a href="favorites.html"><span class="sidebar-icon">❤️</span>Favorites</a></li>
-    <li><a href="chat.html"><span class="sidebar-icon">💬</span>Messages</a></li>
-    <li><a href="profile.html"><span class="sidebar-icon">👤</span>Profile</a></li>
+    <li><a href="/search"><span class="sidebar-icon">🔍</span>Find Service</a></li>
+    <li><a href="/booking"><span class="sidebar-icon">📋</span>My Bookings</a></li>
+    <li><a href="/favorites"><span class="sidebar-icon">❤️</span>Favorites</a></li>
+    <li><a href="/chat"><span class="sidebar-icon">💬</span>Messages</a></li>
+    <li><a href="/profile"><span class="sidebar-icon">👤</span>Profile</a></li>
     <div class="sidebar-bottom">
       <li><a href="/" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
     </div>
@@ -133,17 +133,17 @@
   <div class="card">
     <div class="card-header">
       <div class="card-title">Quick Book</div>
-      <a href="search.html" class="btn-sm">Browse All</a>
+      <a href="/search" class="btn-sm">Browse All</a>
     </div>
     <div class="quick-grid">
-      <a class="quick-card" href="search.html?q=Electrical"><div class="quick-icon">⚡</div><div class="quick-name">Electrical</div></a>
-      <a class="quick-card" href="search.html?q=Plumber"><div class="quick-icon">🔧</div><div class="quick-name">Plumber</div></a>
-      <a class="quick-card" href="search.html?q=AC Repair"><div class="quick-icon">❄️</div><div class="quick-name">AC Repair</div></a>
-      <a class="quick-card" href="search.html?q=Home Cleaning"><div class="quick-icon">🧹</div><div class="quick-name">Cleaning</div></a>
-      <a class="quick-card" href="search.html?q=Laptop Repair"><div class="quick-icon">💻</div><div class="quick-name">Laptop</div></a>
-      <a class="quick-card" href="search.html?q=Painter"><div class="quick-icon">🎨</div><div class="quick-name">Painter</div></a>
-      <a class="quick-card" href="search.html?q=Carpenter"><div class="quick-icon">🪚</div><div class="quick-name">Carpenter</div></a>
-      <a class="quick-card" href="search.html?q=Mobile Repair"><div class="quick-icon">📱</div><div class="quick-name">Mobile</div></a>
+      <a class="quick-card" href="/search?q=Electrical"><div class="quick-icon">⚡</div><div class="quick-name">Electrical</div></a>
+      <a class="quick-card" href="/search?q=Plumber"><div class="quick-icon">🔧</div><div class="quick-name">Plumber</div></a>
+      <a class="quick-card" href="/search?q=AC Repair"><div class="quick-icon">❄️</div><div class="quick-name">AC Repair</div></a>
+      <a class="quick-card" href="/search?q=Home Cleaning"><div class="quick-icon">🧹</div><div class="quick-name">Cleaning</div></a>
+      <a class="quick-card" href="/search?q=Laptop Repair"><div class="quick-icon">💻</div><div class="quick-name">Laptop</div></a>
+      <a class="quick-card" href="/search?q=Painter"><div class="quick-icon">🎨</div><div class="quick-name">Painter</div></a>
+      <a class="quick-card" href="/search?q=Carpenter"><div class="quick-icon">🪚</div><div class="quick-name">Carpenter</div></a>
+      <a class="quick-card" href="/search?q=Mobile Repair"><div class="quick-icon">📱</div><div class="quick-name">Mobile</div></a>
     </div>
   </div>
 
@@ -151,7 +151,7 @@
   <div class="card">
     <div class="card-header">
       <div class="card-title">Recent Bookings</div>
-      <a href="bookings.html" class="btn-sm">View All</a>
+      <a href="/booking" class="btn-sm">View All</a>
     </div>
     <div id="bookingsTable">
       <div class="empty-state">
@@ -187,7 +187,7 @@ async function apiFetch(path, opts={}) {
 async function loadProfile() {
   try {
     const res = await apiFetch('/api/auth/me');
-    if (res.ok) throw new Error();
+    if (!res.ok) throw new Error();
     const u = await res.json();
     document.getElementById('userName').textContent = u.name;
     document.getElementById('userEmail').textContent = u.email;
@@ -195,13 +195,12 @@ async function loadProfile() {
     document.getElementById('walletBalance').textContent = `₹${parseFloat(u.wallet_balance).toFixed(0)}`;
   } catch(e) {
     console.log(e ,"this is an error we catch")
-    alert("")
     logout(); }
 }
 
 async function loadBookings() {
   try {
-    const res = await apiFetch('/api/bookings');
+    const res = await apiFetch('/api/booking');
     if (!res.ok) return;
     const bookings = await res.json();
 
@@ -218,7 +217,7 @@ async function loadBookings() {
         <td>Service #${b.service_id}</td>
         <td><span class="status-badge status-${b.status}">${b.status}</span></td>
         <td>₹${parseFloat(b.final_amount||0).toFixed(0)}</td>
-        <td><a href="booking-detail.html?id=${b.id}" class="btn-sm">View</a></td>
+        <td><a href="/booking-detail?id=${b.id}" class="btn-sm">View</a></td>
       </tr>`).join('');
 
     document.getElementById('bookingsTable').innerHTML = `

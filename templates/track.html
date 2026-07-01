@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Provider — NeedBro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    nav{background:var(--white);border-bottom:1px solid var(--gray-2);padding:0 20px;height:56px;display:flex;align-items:center;gap:14px;flex-shrink:0;z-index:10}
+    .back-btn{color:var(--gray-5);text-decoration:none;font-size:.88rem;font-weight:500}
+    .back-btn:hover{color:var(--blue)}
+    .nav-title{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700}
+    .live-tag{margin-left:auto;background:#FEE2E2;color:var(--red);font-size:.74rem;font-weight:700;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:6px}
+    .live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    /* Map area */
+    .map-area{flex:1;position:relative;background:linear-gradient(135deg,#E0EBFF,#F0F5FF);overflow:hidden}
+    .map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(26,107,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(26,107,255,.07) 1px, transparent 1px);background-size:40px 40px}
+    .route-line{position:absolute;top:30%;left:15%;width:55%;height:3px;background:repeating-linear-gradient(90deg,var(--blue) 0 10px,transparent 10px 18px);transform:rotate(8deg);border-radius:4px}
+    .pin{position:absolute;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-100%)}
+    .pin-icon{width:44px;height:44px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+    .pin-icon span{transform:rotate(45deg);font-size:1.2rem}
+    .pin.provider{top:32%;left:18%}
+    .pin.provider .pin-icon{background:var(--blue)}
+    .pin.destination{top:62%;left:68%}
+    .pin.destination .pin-icon{background:var(--red)}
+    .pin-label{background:var(--white);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:700;margin-top:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);white-space:nowrap}
+    .map-note{position:absolute;bottom:16px;left:16px;background:rgba(255,255,255,.9);padding:8px 14px;border-radius:8px;font-size:.74rem;color:var(--gray-5);backdrop-filter:blur(4px)}
+    /* Bottom sheet */
+    .bottom-sheet{background:var(--white);border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.1);padding:20px 20px 24px;flex-shrink:0;z-index:10;margin-top:-20px;position:relative}
+    .eta-banner{background:linear-gradient(135deg,var(--blue),#0D4FCC);border-radius:14px;padding:18px 20px;color:var(--white);display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .eta-left .eta-label{font-size:.78rem;opacity:.8;margin-bottom:2px}
+    .eta-time{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800}
+    .eta-status{font-size:.85rem;opacity:.9;margin-top:4px}
+    .eta-icon{font-size:2.5rem}
+    .provider-info-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+    .provider-avatar{width:52px;height:52px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+    .provider-name{font-weight:700;font-size:.95rem}
+    .provider-meta{font-size:.8rem;color:var(--gray-5);margin-top:2px}
+    .quick-actions{display:flex;gap:10px;margin-left:auto}
+    .action-circle{width:44px;height:44px;border-radius:50%;background:var(--gray-1);border:1.5px solid var(--gray-2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .2s}
+    .action-circle:hover{border-color:var(--blue);background:var(--sky)}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:6px}
+    .p-step{flex:1;text-align:center;position:relative}
+    .p-step::before{content:'';position:absolute;top:8px;left:-50%;width:100%;height:2px;background:var(--gray-2);z-index:0}
+    .p-step:first-child::before{display:none}
+    .p-step.done::before{background:var(--green)}
+    .p-dot{width:16px;height:16px;border-radius:50%;background:var(--gray-2);margin:0 auto 6px;position:relative;z-index:1}
+    .p-step.done .p-dot{background:var(--green)}
+    .p-step.current .p-dot{background:var(--blue);box-shadow:0 0 0 4px var(--sky)}
+    .p-label{font-size:.68rem;color:var(--gray-5);font-weight:600}
+    .p-step.done .p-label,.p-step.current .p-label{color:var(--gray-9)}
+    @media(max-width:600px){.eta-banner{flex-direction:column;align-items:flex-start;gap:10px}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="back-btn" href="/booking">← Back</a>
+  <div class="nav-title">Live Tracking</div>
+  <div class="live-tag"><span class="live-dot"></span>LIVE</div>
+</nav>
+
+<!-- Map -->
+<div class="map-area">
+  <div class="map-grid"></div>
+  <div class="route-line"></div>
+  <div class="pin provider">
+    <div class="pin-icon"><span>🔧</span></div>
+    <div class="pin-label" id="providerPinLabel">Raj is here</div>
+  </div>
+  <div class="pin destination">
+    <div class="pin-icon"><span>🏠</span></div>
+    <div class="pin-label">Your location</div>
+  </div>
+  <div class="map-note">🗺️ Map preview · Google Maps integration in production</div>
+</div>
+
+<!-- Bottom sheet -->
+<div class="bottom-sheet">
+  <div class="eta-banner">
+    <div class="eta-left">
+      <div class="eta-label">Estimated arrival</div>
+      <div class="eta-time" id="etaTime">12 min</div>
+      <div class="eta-status" id="etaStatus">🚗 On the way to your location</div>
+    </div>
+    <div class="eta-icon">🛵</div>
+  </div>
+
+  <div class="progress-steps" id="progressSteps">
+    <div class="p-step done"><div class="p-dot"></div><div class="p-label">Accepted</div></div>
+    <div class="p-step current"><div class="p-dot"></div><div class="p-label">On the way</div></div>
+    <div class="p-step"><div class="p-dot"></div><div class="p-label">Reached</div></div>
+    <div class="p-step"><div class="p-dot"></div><div class="p-label">Working</div></div>
+    <div class="p-step"><div class="p-dot"></div><div class="p-label">Done</div></div>
+  </div>
+
+  <div class="provider-info-row" style="margin-top:20px">
+    <div class="provider-avatar">👨‍🔧</div>
+    <div>
+      <div class="provider-name">Raj Kumar</div>
+      <div class="provider-meta">⭐ 4.9 · Electrician · Booking #<span id="bookingIdLabel">101</span></div>
+    </div>
+    <div class="quick-actions">
+      <div class="action-circle" title="Call" onclick="showToast('Calling…')">📞</div>
+      <div class="action-circle" title="Message" onclick="location.href='/chat?booking='+bookingId">💬</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+const bookingId = new URLSearchParams(location.search).get('id') || 101;
+document.getElementById('bookingIdLabel').textContent = bookingId;
+
+// Simulate live ETA countdown (demo)
+let eta = 12;
+setInterval(() => {
+  if (eta > 1) {
+    eta -= 1;
+    document.getElementById('etaTime').textContent = `${eta} min`;
+  }
+}, 8000);
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText='position:fixed;bottom:24px;right:24px;background:#0A1628;color:white;padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:999;font-family:Inter,sans-serif';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+// Try to fetch real booking status to set progress steps accurately
+async function loadStatus() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch(API + `/api/booking/${bookingId}`, {headers:{'Authorization':`Bearer ${token}`}});
+    if (!res.ok) return;
+    const b = await res.json();
+    const steps = ['accepted','coming','reached','working','completed'];
+    const idx = steps.indexOf(b.status);
+    if (idx === -1) return;
+    document.querySelectorAll('.p-step').forEach((el,i) => {
+      el.classList.remove('done','current');
+      if (i < idx) el.classList.add('done');
+      if (i === idx) el.classList.add('current');
+    });
+    const statusMsgs = {
+      accepted:'✅ Accepted — provider preparing to leave',
+      coming:'🚗 On the way to your location',
+      reached:'📍 Provider has reached your location',
+      working:'🔧 Service in progress',
+      completed:'✅ Service completed!'
+    };
+    document.getElementById('etaStatus').textContent = statusMsgs[b.status] || '';
+    if (b.status === 'reached' || b.status === 'working') {
+      document.getElementById('etaTime').textContent = b.status === 'working' ? 'In progress' : 'Arrived';
+    }
+  } catch {}
+}
+loadStatus();
+</script>
+</body>
+</html>

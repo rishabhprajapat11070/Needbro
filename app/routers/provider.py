@@ -123,7 +123,7 @@ def provider_dashboard(db: Session = Depends(get_db),
     }
 
 
-@router.get("/bookings", response_model=list[BookingOut])
+@router.get("/booking", response_model=list[BookingOut])
 def provider_bookings(status: str = None, db: Session = Depends(get_db),
                       provider: Provider = Depends(get_current_provider)):
     q = db.query(Booking).filter(Booking.provider_id == provider.id)
@@ -132,7 +132,7 @@ def provider_bookings(status: str = None, db: Session = Depends(get_db),
     return q.order_by(Booking.created_at.desc()).all()
 
 
-@router.put("/bookings/{booking_id}/status")
+@router.put("/booking/{booking_id}/status")
 def update_booking_status(booking_id: int, data: BookingStatusUpdate,
                            db: Session = Depends(get_db),
                            provider: Provider = Depends(get_current_provider)):

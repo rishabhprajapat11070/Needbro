@@ -87,7 +87,7 @@
 <body>
 
 <nav>
-  <a class="back-btn" href="search.html">← Back</a>
+  <a class="back-btn" href="/search">← Back</a>
   <div class="nav-title">Book a Service</div>
 </nav>
 
@@ -107,7 +107,7 @@
   <p>Your professional has been notified and will confirm shortly.<br/>You'll receive updates via notifications.</p>
   <div class="success-actions">
     <a href="/dashboard" style="padding:12px 24px;background:var(--blue);color:white;border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">Go to Dashboard</a>
-    <a href="/bookings" style="padding:12px 24px;background:var(--gray-2);color:var(--gray-9);border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">View My Bookings</a>
+    <a href="/booking" style="padding:12px 24px;background:var(--gray-2);color:var(--gray-9);border-radius:10px;text-decoration:none;font-weight:700;font-family:'Sora',sans-serif">View My Bookings</a>
   </div>
 </div>
 
@@ -385,7 +385,7 @@ async function confirmBooking() {
   btn.textContent = 'Confirming…';
 
   try {
-    const res = await fetch(API + '/api/bookings', {
+    const res = await fetch(API + '/api/booking', {
       method:'POST',
       headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
       body: JSON.stringify({

@@ -284,7 +284,7 @@
     <li><a href="#categories">Services</a></li>
     <li><a href="#how-it-works">How it works</a></li>
     <li><a href="#providers">Professionals</a></li>
-    <li><a href="provider-register.html">Join as Pro</a></li>
+    <li><a href="/provider-register">Join as Pro</a></li>
   </ul>
   <div class="nav-cta">
     <button class="btn btn-outline" onclick="openModal('login')">Sign in</button>
@@ -571,7 +571,7 @@ const CATEGORIES = [
   const grid = document.getElementById('categoriesGrid');
   CATEGORIES.forEach(c => {
     grid.innerHTML += `
-      <a class="cat-card" href="search.html?q=${encodeURIComponent(c.name)}">
+      <a class="cat-card" href="/search?q=${encodeURIComponent(c.name)}">
         <span class="cat-icon">${c.icon}</span>
         <div class="cat-name">${c.name}</div>
       </a>`;
@@ -590,7 +590,7 @@ const SAMPLE_PROVIDERS = [
   const grid = document.getElementById('providersGrid');
   SAMPLE_PROVIDERS.forEach(p => {
     grid.innerHTML += `
-      <div class="provider-card" onclick="location.href='provider.html?id=1'">
+      <div class="provider-card" onclick="location.href='/provider?id=1'">
         <div class="provider-top">
           <div class="provider-avatar">${p.emoji}</div>
           <div>
@@ -680,7 +680,7 @@ async function register() {
 
 function doSearch() {
   const q = document.getElementById('searchInput').value.trim();
-  if (q) location.href = `search.html?q=${encodeURIComponent(q)}`;
+  if (q) location.href = `/search?q=${encodeURIComponent(q)}`;
 }
 document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 

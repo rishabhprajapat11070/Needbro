@@ -35,6 +35,8 @@ manager = ConnectionManager()
 
 # ─── WebSocket Endpoint ───────────────────────────────────────────────────────
 
+router = APIRouter()
+
 @router.websocket("/ws/{booking_id}/{sender_type}/{sender_id}")
 async def websocket_chat(
     booking_id: int,

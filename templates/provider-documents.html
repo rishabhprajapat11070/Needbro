@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documents — NeedBro Provider</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1A6BFF;--navy:#0A1628;--sky:#EBF2FF;--amber:#FF8C00;--green:#12B76A;--red:#F04438;--gray-1:#F8FAFF;--gray-2:#E8EDF7;--gray-5:#6B7280;--gray-9:#111827;--white:#FFFFFF;--shadow:0 4px 24px rgba(26,107,255,.12)}
+    body{font-family:'Inter',sans-serif;color:var(--gray-9);background:var(--gray-1);display:flex;min-height:100vh}
+    .sidebar{width:240px;background:var(--navy);min-height:100vh;padding:24px 16px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+    .sidebar-logo{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:8px;padding:0 8px}
+    .sidebar-logo span{color:var(--amber)}
+    .sidebar-role{font-size:.72rem;color:#4A6A9A;padding:0 8px;margin-bottom:28px}
+    .sidebar-nav{list-style:none;display:flex;flex-direction:column;gap:4px}
+    .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;text-decoration:none;color:#7A9CC4;font-size:.88rem;font-weight:500;transition:all .2s}
+    .sidebar-nav a:hover,.sidebar-nav .active a{background:rgba(26,107,255,.15);color:var(--white)}
+    .sidebar-nav .active a{background:var(--blue);color:var(--white)}
+    .sidebar-icon{font-size:1rem;width:20px;text-align:center}
+    .sidebar-bottom{margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)}
+    .main{flex:1;padding:28px;overflow-y:auto;max-width:880px}
+    .page-header{margin-bottom:22px}
+    .page-header h1{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:4px}
+    .page-header p{color:var(--gray-5);font-size:.9rem}
+    /* Verification status */
+    .verify-banner{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:12px;margin-bottom:22px}
+    .verify-banner.pending{background:#FFF3CD;border:1.5px solid #FFE69C}
+    .verify-banner.verified{background:#D1FAE5;border:1.5px solid #6EE7B7}
+    .verify-banner .icon{font-size:1.8rem}
+    .verify-banner h4{font-size:.95rem;font-weight:700;margin-bottom:2px}
+    .verify-banner.pending h4{color:#856404}
+    .verify-banner.verified h4{color:#065F46}
+    .verify-banner p{font-size:.82rem}
+    .verify-banner.pending p{color:#9A7C0A}
+    .verify-banner.verified p{color:#047857}
+    /* Progress */
+    .progress-bar-wrap{background:var(--white);border:1.5px solid var(--gray-2);border-radius:14px;padding:20px;margin-bottom:20px}
+    .progress-label{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600;margin-bottom:10px}
+    .progress-track{height:10px;background:var(--gray-2);border-radius:10px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:10px;transition:width .4s}
+    /* Doc cards */
+    .doc-list{display:flex;flex-direction:column;gap:14px}
+    .doc-card{background:var(--white);border:1.5px solid var(--gray-2);border-radius:14px;padding:20px;display:flex;align-items:center;gap:16px}
+    .doc-card.uploaded{border-color:#6EE7B7}
+    .doc-icon-box{width:56px;height:56px;border-radius:12px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+    .doc-card.uploaded .doc-icon-box{background:#D1FAE5}
+    .doc-content{flex:1}
+    .doc-title{font-weight:700;font-size:.95rem;margin-bottom:3px}
+    .doc-desc{font-size:.8rem;color:var(--gray-5)}
+    .doc-status-tag{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:6px}
+    .tag-missing{background:var(--gray-2);color:var(--gray-5)}
+    .tag-pending{background:#FEF3C7;color:#92400E}
+    .tag-approved{background:#D1FAE5;color:#065F46}
+    .upload-btn{padding:9px 18px;border:1.5px solid var(--gray-2);border-radius:9px;background:var(--white);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;flex-shrink:0}
+    .upload-btn:hover{border-color:var(--blue);color:var(--blue)}
+    .upload-btn.uploaded{border-color:var(--green);color:var(--green)}
+    .info-box{background:var(--sky);border-radius:10px;padding:14px 18px;font-size:.82rem;color:var(--blue);margin-top:20px;line-height:1.6}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 18px;border-radius:10px;font-size:.88rem;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{background:var(--green)}
+    @media(max-width:900px){.sidebar{display:none}.main{padding:16px}.doc-card{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Need<span>Bro</span></div>
+  <div class="sidebar-role">Provider Dashboard</div>
+  <ul class="sidebar-nav">
+    <li><a href="/provider-dashboard"><span class="sidebar-icon">🏠</span>Dashboard</a></li>
+    <li><a href="/provider-bookings"><span class="sidebar-icon">📋</span>Bookings</a></li>
+    <li><a href="/provider-earnings"><span class="sidebar-icon">💰</span>Earnings</a></li>
+    <li><a href="/chat"><span class="sidebar-icon">💬</span>Messages</a></li>
+    <li><a href="/provider-profile"><span class="sidebar-icon">👤</span>My Profile</a></li>
+    <li class="active"><a href="/provider-documents"><span class="sidebar-icon">📄</span>Documents</a></li>
+    <div class="sidebar-bottom">
+      <li><a href="/" onclick="logout()"><span class="sidebar-icon">🚪</span>Sign Out</a></li>
+    </div>
+  </ul>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <h1>Verification Documents</h1>
+    <p>Upload your documents to get verified and start receiving bookings</p>
+  </div>
+
+  <div class="verify-banner pending" id="verifyBanner">
+    <span class="icon">⏳</span>
+    <div>
+      <h4 id="verifyTitle">Verification In Progress</h4>
+      <p id="verifySub">Complete document upload below. Our team reviews within 24-48 hours.</p>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span>Document Completion</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="doc-list">
+    <div class="doc-card" id="card-aadhaar">
+      <div class="doc-icon-box">🪪</div>
+      <div class="doc-content">
+        <div class="doc-title">Aadhaar Card</div>
+        <div class="doc-desc">Government-issued identity proof (front & back)</div>
+        <span class="doc-status-tag tag-missing" id="status-aadhaar">Required · Not uploaded</span>
+      </div>
+      <button class="upload-btn" onclick="uploadDoc('aadhaar')">📤 Upload</button>
+    </div>
+
+    <div class="doc-card" id="card-pan">
+      <div class="doc-icon-box">💳</div>
+      <div class="doc-content">
+        <div class="doc-title">PAN Card</div>
+        <div class="doc-desc">Required for payment processing & tax compliance</div>
+        <span class="doc-status-tag tag-missing" id="status-pan">Required · Not uploaded</span>
+      </div>
+      <button class="upload-btn" onclick="uploadDoc('pan')">📤 Upload</button>
+    </div>
+
+    <div class="doc-card" id="card-certificate">
+      <div class="doc-icon-box">📜</div>
+      <div class="doc-content">
+        <div class="doc-title">Trade Certificate</div>
+        <div class="doc-desc">Optional — boosts trust score, e.g. ITI / trade license</div>
+        <span class="doc-status-tag tag-missing" id="status-certificate">Optional · Not uploaded</span>
+      </div>
+      <button class="upload-btn" onclick="uploadDoc('certificate')">📤 Upload</button>
+    </div>
+
+    <div class="doc-card" id="card-other">
+      <div class="doc-icon-box">📁</div>
+      <div class="doc-content">
+        <div class="doc-title">Other Documents</div>
+        <div class="doc-desc">Police verification, insurance, or anything else</div>
+        <span class="doc-status-tag tag-missing" id="status-other">Optional · Not uploaded</span>
+      </div>
+      <button class="upload-btn" onclick="uploadDoc('other')">📤 Upload</button>
+    </div>
+  </div>
+
+  <div class="info-box">
+    💡 <strong>Why verify?</strong> Verified providers get a trust badge, appear higher in search results, and receive 3x more bookings on average. Documents are encrypted and reviewed only by our compliance team.
+  </div>
+
+  <input type="file" id="docInput" accept="image/*,application/pdf" style="display:none" />
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('provider_token');
+if (!token) location.href = '/provider-login';
+
+const docState = { aadhaar: 'missing', pan: 'missing', certificate: 'missing', other: 'missing' };
+
+function uploadDoc(type) {
+  const input = document.getElementById('docInput');
+  input.onchange = async () => {
+    if (!input.files[0]) return;
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+    try {
+      await fetch(API + `/api/provider/documents?doc_type=${type}`, {
+        method:'POST', headers:{'Authorization':`Bearer ${token}`}, body: formData
+      });
+    } catch {}
+    docState[type] = 'pending';
+    updateUI();
+    showToast(`${capitalize(type)} uploaded — pending admin review`,'success');
+  };
+  input.click();
+}
+
+function updateUI() {
+  let uploadedCount = 0;
+  Object.keys(docState).forEach(type => {
+    const card = document.getElementById(`card-${type}`);
+    const status = document.getElementById(`status-${type}`);
+    const btn = card.querySelector('.upload-btn');
+    if (docState[type] !== 'missing') {
+      uploadedCount++;
+      card.classList.add('uploaded');
+      status.className = `doc-status-tag tag-${docState[type]}`;
+      status.textContent = docState[type] === 'pending' ? '⏳ Pending review' : '✅ Approved';
+      btn.textContent = '✓ Uploaded';
+      btn.classList.add('uploaded');
+    }
+  });
+
+  const requiredDone = docState.aadhaar !== 'missing' && docState.pan !== 'missing';
+  const pct = Math.round((uploadedCount / 4) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  if (requiredDone) {
+    const banner = document.getElementById('verifyBanner');
+    banner.className = 'verify-banner pending';
+    document.getElementById('verifyTitle').textContent = 'Documents Submitted ✓';
+    document.getElementById('verifySub').textContent = 'Required documents uploaded. Awaiting admin approval (usually within 24-48 hrs).';
+  }
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function logout() { localStorage.removeItem('provider_token'); }
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Try to load actual verified status
+async function loadStatus() {
+  try {
+    const res = await fetch(API + '/api/provider/me', {headers:{'Authorization':`Bearer ${token}`}});
+    if (!res.ok) return;
+    const p = await res.json();
+    if (p.is_verified) {
+      const banner = document.getElementById('verifyBanner');
+      banner.className = 'verify-banner verified';
+      banner.querySelector('.icon').textContent = '✅';
+      document.getElementById('verifyTitle').textContent = 'Fully Verified Provider';
+      document.getElementById('verifySub').textContent = 'All documents approved. You can accept bookings.';
+    }
+  } catch {}
+}
+loadStatus();
+</script>
+</body>
+</html>
